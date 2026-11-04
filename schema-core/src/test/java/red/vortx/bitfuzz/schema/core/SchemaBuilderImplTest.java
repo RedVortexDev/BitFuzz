@@ -1,0 +1,157 @@
+package red.vortx.bitfuzz.schema.core;
+
+import org.junit.jupiter.api.Test;
+import red.vortx.bitfuzz.schema.api.Endianness;
+import red.vortx.bitfuzz.schema.api.Schema;
+import red.vortx.bitfuzz.schema.api.SchemaBuilder;
+import red.vortx.bitfuzz.schema.api.SchemaDefaults;
+import red.vortx.bitfuzz.schema.api.field.Field;
+import red.vortx.bitfuzz.schema.api.field.type.EndiannessTypeSpec;
+import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class SchemaBuilderImplTest {
+
+    private static final TypeSpec<Integer> INT = new EndiannessTypeSpec<>(Primitives.INT, Primitives.INT_LE);
+
+    private static SchemaDefaults defaultsOf(final Schema schema) {
+        return ((SchemaImpl) schema).defaults();
+    }
+
+    @Test
+    void defaultsAreBigEndian() {
+        final Schema schema = new SchemaBuilderImpl().field(INT, "a").build();
+
+        assertThat(defaultsOf(schema).endianness()).isEqualTo(Endianness.BIG_ENDIAN);
+        assertThat(schema.fields().getFirst().type()).isSameAs(Primitives.INT);
+    }
+
+    @Test
+    void endiannessSpecFollowsDefaults() {
+        final Schema schema = new SchemaBuilderImpl()
+                .defaults(defaults -> defaults.endianness(Endianness.LITTLE_ENDIAN))
+                .field(INT, "a")
+                .build();
+
+        assertThat(schema.fields().getFirst().type()).isSameAs(Primitives.INT_LE);
+    }
+
+    @Test
+    void defaultsApplyRegardlessOfCallOrder() {
+        final Schema schema = new SchemaBuilderImpl()
+                .field(INT, "a")
+                .defaults(defaults -> defaults.endianness(Endianness.LITTLE_ENDIAN))
+                .build();
+
+        assertThat(schema.fields().getFirst().type()).isSameAs(Primitives.INT_LE);
+    }
+
+    @Test
+    void laterDefaultsCallsOverrideEarlierOnes() {
+        final Schema schema = new SchemaBuilderImpl()
+                .defaults(defaults -> defaults.endianness(Endianness.LITTLE_ENDIAN))
+                .defaults(defaults -> defaults.endianness(Endianness.BIG_ENDIAN))
+                .field(INT, "a")
+                .build();
+
+        assertThat(schema.fields().getFirst().type()).isSameAs(Primitives.INT);
+    }
+
+    @Test
+    void pinnedTypesIgnoreDefaults() {
+        final Schema schema = new SchemaBuilderImpl()
+                .defaults(defaults -> defaults.endianness(Endianness.LITTLE_ENDIAN))
+                .field(Primitives.INT, "pinned")
+                .build();
+
+        assertThat(schema.fields().getFirst().type()).isSameAs(Primitives.INT);
+    }
+
+    @Test
+    void fieldsKeepNamesAndOrder() {
+        final Schema schema = new SchemaBuilderImpl()
+                .field(Primitives.BYTE, "first")
+                .field(Primitives.LONG, "second")
+                .field(Primitives.BYTE, "third")
+                .build();
+
+        assertThat(schema.fields()).extracting(Field::name).containsExactly("first", "second", "third");
+    }
+
+    @Test
+    void duplicateFieldNamesAreAllowed() {
+        final Schema schema = new SchemaBuilderImpl()
+                .field(Primitives.BYTE, "same")
+                .field(Primitives.BYTE, "same")
+                .build();
+
+        assertThat(schema.fields()).hasSize(2);
+    }
+
+    @Test
+    void specsAreResolvedOnceAtBuild() {
+        final AtomicInteger resolutions = new AtomicInteger();
+        final TypeSpec<Integer> counting = defaults -> {
+            resolutions.incrementAndGet();
+            return Primitives.INT;
+        };
+
+        final SchemaBuilder builder = new SchemaBuilderImpl().field(counting, "a");
+        assertThat(resolutions).hasValue(0);
+
+        final Schema schema = builder.build();
+        assertThat(resolutions).hasValue(1);
+
+        schema.fields();
+        assertThat(resolutions).hasValue(1);
+    }
+
+    @Test
+    void builtSchemaIsUnaffectedByLaterBuilderChanges() {
+        final SchemaBuilder builder = new SchemaBuilderImpl().field(INT, "a");
+        final Schema first = builder.build();
+
+        builder.defaults(defaults -> defaults.endianness(Endianness.LITTLE_ENDIAN)).field(INT, "b");
+        final Schema second = builder.build();
+
+        assertThat(first.fields()).hasSize(1);
+        assertThat(first.fields().getFirst().type()).isSameAs(Primitives.INT);
+        assertThat(defaultsOf(first).endianness()).isEqualTo(Endianness.BIG_ENDIAN);
+
+        assertThat(second.fields()).hasSize(2);
+        assertThat(second.fields()).extracting(Field::type).containsOnly(Primitives.INT_LE);
+    }
+
+    @Test
+    void defaultLengthTypeIsInt() {
+        final Schema schema = new SchemaBuilderImpl().build();
+
+        assertThat(defaultsOf(schema).lengthType().javaType()).isEqualTo(Integer.class);
+    }
+
+    @Test
+    void lengthTypeSpecResolvesAgainstEndiannessAtBuild() {
+        final Schema schema = new SchemaBuilderImpl()
+                .defaults(defaults -> defaults.lengthType(INT))
+                .defaults(defaults -> defaults.endianness(Endianness.LITTLE_ENDIAN))
+                .build();
+
+        assertThat(defaultsOf(schema).lengthType()).isSameAs(Primitives.INT_LE);
+    }
+
+    @Test
+    void lengthTypeIsVisibleToSpecs() {
+        final TypeSpec<Integer> lengthOfSchema = SchemaDefaults::lengthType;
+
+        final Schema schema = new SchemaBuilderImpl()
+                .defaults(defaults -> defaults.lengthType(Primitives.INT_LE))
+                .field(lengthOfSchema, "length")
+                .build();
+
+        assertThat(schema.fields().getFirst().type()).isSameAs(Primitives.INT_LE);
+    }
+
+}
