@@ -122,18 +122,57 @@ class SchemaImplTest {
     }
 
     @Test
-    void writeFailureIsWrapped() {
-        final IllegalStateException failure = new IllegalStateException("boom");
+    void deliberateWriteRejectionIsWrapped() {
+        final SchemaException rejection = new SchemaException("no");
         final Schema schema = new SchemaBuilderImpl()
                 .field(new SimpleType<>(Integer.class, (out, value) -> {
-                    throw failure;
-                }, in -> 0), "broken")
+                    throw rejection;
+                }, in -> 0), "picky")
                 .build();
 
         assertThatThrownBy(() -> written(out -> schema.write(out, List.of(1))))
                 .isInstanceOf(SchemaException.class)
-                .hasMessageContaining("broken")
-                .hasCause(failure);
+                .hasMessageContaining("picky")
+                .hasCause(rejection);
+    }
+
+    @Test
+    void unexpectedWriteFailurePropagatesUnchanged() {
+        final IllegalStateException bug = new IllegalStateException("boom");
+        final Schema schema = new SchemaBuilderImpl()
+                .field(new SimpleType<>(Integer.class, (out, value) -> {
+                    throw bug;
+                }, in -> 0), "broken")
+                .build();
+
+        assertThatThrownBy(() -> written(out -> schema.write(out, List.of(1)))).isSameAs(bug);
+    }
+
+    @Test
+    void unexpectedReadFailurePropagatesUnchanged() {
+        final IllegalStateException bug = new IllegalStateException("boom");
+        final Schema schema = new SchemaBuilderImpl()
+                .field(new SimpleType<>(Integer.class, (out, value) -> {
+                }, in -> {
+                    throw bug;
+                }), "broken")
+                .build();
+
+        assertThatThrownBy(() -> schema.read(reader(new byte[0]))).isSameAs(bug);
+    }
+
+    @Test
+    void deliberateRejectionMayCarryAnyCause() {
+        final Schema schema = new SchemaBuilderImpl()
+                .field(new SimpleType<>(Integer.class, (out, value) -> {
+                }, in -> {
+                    throw new SchemaException("bad data", new IllegalStateException("detail"));
+                }), "picky")
+                .build();
+
+        assertThatThrownBy(() -> schema.read(reader(new byte[0])))
+                .isInstanceOf(SchemaException.class)
+                .hasMessageContaining("picky");
     }
 
     @Test

@@ -2,6 +2,7 @@ package red.vortx.bitfuzz.schema.core;
 
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
+import red.vortx.bitfuzz.buffer.ReadUnderflowException;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaDefaults;
 import red.vortx.bitfuzz.schema.api.SchemaException;
@@ -43,7 +44,12 @@ public record SchemaImpl(List<Field> fields, SchemaDefaults defaults) implements
             try {
                 field.type().writeUnchecked(output, value);
             } catch (final Exception e) {
-                throw new SchemaException("Failed to write value for field '%s' at index %d".formatted(field.name(), i), e);
+                if (this.isIntendedException(e) || e instanceof ClassCastException) {
+                    throw new SchemaException("Failed to write value for field '%s' at index %d"
+                            .formatted(field.name(), i), e
+                    );
+                }
+                throw e;
             }
         }
     }
@@ -57,7 +63,10 @@ public record SchemaImpl(List<Field> fields, SchemaDefaults defaults) implements
                 final Object value = field.type().read(input);
                 values.add(value);
             } catch (final Exception e) {
-                throw new SchemaException("Failed to read value for field '%s'".formatted(field.name()), e);
+                if (this.isIntendedException(e)) {
+                    throw new SchemaException("Failed to read value for field '%s'".formatted(field.name()), e);
+                }
+                throw e;
             }
         }
 
@@ -67,6 +76,10 @@ public record SchemaImpl(List<Field> fields, SchemaDefaults defaults) implements
     @Override
     public List<Field> fields() {
         return this.fields;
+    }
+
+    boolean isIntendedException(final Throwable throwable) {
+        return throwable instanceof SchemaException || throwable instanceof ReadUnderflowException;
     }
 
 }

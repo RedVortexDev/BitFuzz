@@ -30,7 +30,7 @@ public record ListType<T>(Type<T> elementType, Type<Integer> lengthType) impleme
         final int length = this.lengthType.read(input);
 
         if (length < 0) {
-            throw new IllegalArgumentException("List length is negative");
+            throw new SchemaException("List length is negative: %d".formatted(length));
         }
         if (length > input.remaining()) {
             throw new SchemaException("List length %d is greater than the %d readable bytes"

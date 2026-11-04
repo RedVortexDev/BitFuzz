@@ -6,4 +6,5 @@ dependencies {
     api(project(":schema-core"))
 
     testImplementation(project(":buffer-netty"))
+    testImplementation(project(":fuzz-core"))
 }
