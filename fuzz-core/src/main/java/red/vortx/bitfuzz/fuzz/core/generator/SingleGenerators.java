@@ -74,7 +74,13 @@ public enum SingleGenerators {
             List.of(new UUID(0, 0), new UUID(-1, -1),
                     new UUID(Long.MIN_VALUE, Long.MAX_VALUE)
             ),
-            _ -> UUID.randomUUID(),
+            random -> {
+                // version 4, IETF variant
+                final long mostSigBits = (random.nextLong() & 0xFFFFFFFFFFFF0FFFL) | 0x0000000000004000L;
+                final long leastSigBits = (random.nextLong() & 0x3FFFFFFFFFFFFFFFL) | 0x8000000000000000L;
+
+                return new UUID(mostSigBits, leastSigBits);
+            },
             random -> new UUID(random.nextLong(), random.nextLong())
     );
 
