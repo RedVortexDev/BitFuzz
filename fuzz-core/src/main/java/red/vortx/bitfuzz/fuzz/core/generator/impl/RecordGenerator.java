@@ -1,9 +1,11 @@
 package red.vortx.bitfuzz.fuzz.core.generator.impl;
 
 import red.vortx.bitfuzz.fuzz.api.Generator;
+import red.vortx.bitfuzz.fuzz.api.GeneratorLookup;
 import red.vortx.bitfuzz.schema.api.SchemaException;
 import red.vortx.bitfuzz.schema.std.record.RecordType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,6 +27,22 @@ public record RecordGenerator<R extends Record>(RecordType<R> type,
     public RecordGenerator {
         Objects.requireNonNull(type, "type");
         components = List.copyOf(components);
+    }
+
+    /// Creates a generator for a record's components.
+    ///
+    /// @param type   the record type
+    /// @param lookup where to find generators for the component types
+    /// @param <R>    the record type
+    /// @return a generator for the record
+    public static <R extends Record> RecordGenerator<R> of(final RecordType<R> type, final GeneratorLookup lookup) {
+        final List<Generator<?>> components = new ArrayList<>(type.components().size());
+
+        for (final RecordType.Component component : type.components()) {
+            components.add(lookup.ofType(component.type()));
+        }
+
+        return new RecordGenerator<>(type, components);
     }
 
     @Override

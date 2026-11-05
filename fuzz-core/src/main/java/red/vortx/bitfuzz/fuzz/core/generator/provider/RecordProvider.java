@@ -7,8 +7,6 @@ import red.vortx.bitfuzz.fuzz.core.generator.impl.RecordGenerator;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 import red.vortx.bitfuzz.schema.std.record.RecordType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /// Provides generators for [mapped records][RecordType].
@@ -20,13 +18,8 @@ public record RecordProvider() implements GeneratorProvider {
             return Optional.empty();
         }
 
-        final List<Generator<?>> components = new ArrayList<>(recordType.components().size());
-        for (final RecordType.Component component : recordType.components()) {
-            components.add(lookup.ofType(component.type()));
-        }
-
         //noinspection unchecked
-        return Optional.of((Generator<T>) new RecordGenerator<>(recordType, components));
+        return Optional.of((Generator<T>) RecordGenerator.of(recordType, lookup));
     }
 
 }
