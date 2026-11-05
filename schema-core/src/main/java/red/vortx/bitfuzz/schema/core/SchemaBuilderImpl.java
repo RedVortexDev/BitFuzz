@@ -8,6 +8,7 @@ import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class SchemaBuilderImpl implements SchemaBuilder {
@@ -17,12 +18,17 @@ public class SchemaBuilderImpl implements SchemaBuilder {
 
     @Override
     public SchemaBuilder field(final TypeSpec<?> type, final String name) {
+        Objects.requireNonNull(type, "type");
+        Objects.requireNonNull(name, "name");
+
         this.fields.add(new BuilderField(type, name));
         return this;
     }
 
     @Override
     public SchemaBuilder defaults(final Consumer<SchemaDefaults.Mutable> defaults) {
+        Objects.requireNonNull(defaults, "defaults");
+
         defaults.accept(this.defaults);
         return this;
     }

@@ -12,6 +12,7 @@ import red.vortx.bitfuzz.schema.api.Schema;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.random.RandomGenerator;
 
 /// Checks that every generated value survives being encoded and decoded. The decoded values must equal the
@@ -25,6 +26,15 @@ import java.util.random.RandomGenerator;
 public record RoundTripRunner(Schema schema, SchemaGenerator generator, int maxFailures) implements FuzzRunner {
 
     public static final int DEFAULT_MAX_FAILURES = 10;
+
+    public RoundTripRunner {
+        Objects.requireNonNull(schema, "schema");
+        Objects.requireNonNull(generator, "generator");
+
+        if (maxFailures < 1) {
+            throw new IllegalArgumentException("maxFailures must be at least 1");
+        }
+    }
 
     /// Creates a runner that generates values with the given lookup.
     ///

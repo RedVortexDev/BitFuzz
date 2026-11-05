@@ -3,6 +3,7 @@ package red.vortx.bitfuzz.buffer.nio;
 import red.vortx.bitfuzz.buffer.impl.CheckedByteReader;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 import static red.vortx.bitfuzz.buffer.nio.NIOBufferUtility.bigEndian;
 import static red.vortx.bitfuzz.buffer.nio.NIOBufferUtility.littleEndian;
@@ -18,7 +19,7 @@ public final class NIOByteReader extends CheckedByteReader {
     ///
     /// @param buffer the underlying [NIO ByteBuffer][ByteBuffer]
     public NIOByteReader(final ByteBuffer buffer) {
-        this.buffer = buffer;
+        this.buffer = Objects.requireNonNull(buffer, "buffer");
     }
 
     @Override

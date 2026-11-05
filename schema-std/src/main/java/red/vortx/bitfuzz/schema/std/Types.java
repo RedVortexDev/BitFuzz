@@ -8,6 +8,7 @@ import red.vortx.bitfuzz.schema.core.Primitives;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,6 +51,8 @@ public enum Types {
     public static final TypeSpec<String> STRING = defaults -> new StringType(defaults.lengthType());
 
     public static TypeSpec<String> string(final TypeSpec<Integer> lengthType) {
+        Objects.requireNonNull(lengthType, "lengthType");
+
         return defaults -> new StringType(lengthType.resolve(defaults));
     }
 
@@ -61,6 +64,8 @@ public enum Types {
     // Collections
 
     public static <T> TypeSpec<List<T>> list(final TypeSpec<T> elementType) {
+        Objects.requireNonNull(elementType, "elementType");
+
         return defaults -> new ListType<>(
                 elementType.resolve(defaults),
                 defaults.lengthType()
@@ -68,6 +73,9 @@ public enum Types {
     }
 
     public static <T> TypeSpec<List<T>> list(final TypeSpec<T> elementType, final TypeSpec<Integer> lengthType) {
+        Objects.requireNonNull(elementType, "elementType");
+        Objects.requireNonNull(lengthType, "lengthType");
+
         return defaults -> new ListType<>(
                 elementType.resolve(defaults),
                 lengthType.resolve(defaults)
@@ -75,6 +83,9 @@ public enum Types {
     }
 
     public static <K, V> TypeSpec<Map<K, V>> map(final TypeSpec<K> keyType, final TypeSpec<V> valueType) {
+        Objects.requireNonNull(keyType, "keyType");
+        Objects.requireNonNull(valueType, "valueType");
+
         return defaults -> new MapType<>(
                 keyType.resolve(defaults),
                 valueType.resolve(defaults),
@@ -83,6 +94,10 @@ public enum Types {
     }
 
     public static <K, V> TypeSpec<Map<K, V>> map(final TypeSpec<K> keyType, final TypeSpec<V> valueType, final TypeSpec<Integer> lengthType) {
+        Objects.requireNonNull(keyType, "keyType");
+        Objects.requireNonNull(valueType, "valueType");
+        Objects.requireNonNull(lengthType, "lengthType");
+
         return defaults -> new MapType<>(
                 keyType.resolve(defaults),
                 valueType.resolve(defaults),
@@ -93,6 +108,8 @@ public enum Types {
     // Extras
 
     public static <T> TypeSpec<Optional<T>> optional(final TypeSpec<T> valueType) {
+        Objects.requireNonNull(valueType, "valueType");
+
         return defaults -> new OptionalType<>(valueType.resolve(defaults));
     }
 

@@ -3,6 +3,7 @@ package red.vortx.bitfuzz.schema.api.field.type;
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
 
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -14,6 +15,12 @@ import java.util.function.Function;
 /// @param <T>      the type of the value
 public record SimpleType<T>(Class<T> javaType, BiConsumer<ByteWriter, T> writer,
                             Function<ByteReader, T> reader) implements Type<T> {
+
+    public SimpleType {
+        Objects.requireNonNull(javaType, "javaType");
+        Objects.requireNonNull(writer, "writer");
+        Objects.requireNonNull(reader, "reader");
+    }
 
     @Override
     public void write(final ByteWriter output, final T value) {

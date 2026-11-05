@@ -3,6 +3,8 @@ package red.vortx.bitfuzz.buffer.netty;
 import io.netty.buffer.ByteBuf;
 import red.vortx.bitfuzz.buffer.impl.CheckedByteWriter;
 
+import java.util.Objects;
+
 /// A writer for primitives backed by a [Netty ByteBuf][ByteBuf].
 public final class NettyByteWriter extends CheckedByteWriter {
 
@@ -12,7 +14,7 @@ public final class NettyByteWriter extends CheckedByteWriter {
     ///
     /// @param buffer the underlying [Netty ByteBuf][ByteBuf]
     public NettyByteWriter(final ByteBuf buffer) {
-        this.buffer = buffer;
+        this.buffer = Objects.requireNonNull(buffer, "buffer");
     }
 
     @Override

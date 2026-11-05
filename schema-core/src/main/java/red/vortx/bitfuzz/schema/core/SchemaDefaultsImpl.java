@@ -6,7 +6,14 @@ import red.vortx.bitfuzz.schema.api.field.type.EndiannessTypeSpec;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
 
+import java.util.Objects;
+
 public record SchemaDefaultsImpl(Endianness endianness, Type<Integer> lengthType) implements SchemaDefaults {
+
+    public SchemaDefaultsImpl {
+        Objects.requireNonNull(endianness, "endianness");
+        Objects.requireNonNull(lengthType, "lengthType");
+    }
 
     public Mutable toMutable() {
         return new MutableImpl(this.endianness, this.lengthType);
@@ -23,8 +30,8 @@ public record SchemaDefaultsImpl(Endianness endianness, Type<Integer> lengthType
         private TypeSpec<Integer> lengthType;
 
         public MutableImpl(final Endianness endianness, final TypeSpec<Integer> lengthType) {
-            this.endianness = endianness;
-            this.lengthType = lengthType;
+            this.endianness = Objects.requireNonNull(endianness, "endianness");
+            this.lengthType = Objects.requireNonNull(lengthType, "lengthType");
         }
 
         @Override
@@ -39,18 +46,18 @@ public record SchemaDefaultsImpl(Endianness endianness, Type<Integer> lengthType
 
         @Override
         public Mutable toMutable() {
-            return this;
+            return new MutableImpl(this.endianness, this.lengthType);
         }
 
         @Override
         public Mutable endianness(final Endianness endianness) {
-            this.endianness = endianness;
+            this.endianness = Objects.requireNonNull(endianness, "endianness");
             return this;
         }
 
         @Override
         public Mutable lengthType(final TypeSpec<Integer> lengthType) {
-            this.lengthType = lengthType;
+            this.lengthType = Objects.requireNonNull(lengthType, "lengthType");
             return this;
         }
 

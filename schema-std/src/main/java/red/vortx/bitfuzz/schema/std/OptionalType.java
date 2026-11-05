@@ -5,6 +5,7 @@ import red.vortx.bitfuzz.buffer.ByteWriter;
 import red.vortx.bitfuzz.schema.api.SchemaException;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /// An optional value. A presence byte (`0` empty, `1` present) followed by the value when present.
@@ -16,6 +17,10 @@ public record OptionalType<T>(Type<T> valueType) implements Type<Optional<T>> {
 
     private static final byte EMPTY = 0;
     private static final byte PRESENT = 1;
+
+    public OptionalType {
+        Objects.requireNonNull(valueType, "valueType");
+    }
 
     @Override
     public void write(final ByteWriter output, final Optional<T> value) {

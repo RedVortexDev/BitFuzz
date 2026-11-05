@@ -10,16 +10,20 @@ import red.vortx.bitfuzz.schema.api.field.Field;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public record SchemaImpl(List<Field> fields, SchemaDefaults defaults) implements Schema {
 
     public SchemaImpl(final List<Field> fields, final SchemaDefaults defaults) {
         this.fields = List.copyOf(fields);
-        this.defaults = defaults;
+        this.defaults = Objects.requireNonNull(defaults, "defaults");
     }
 
     @Override
     public void write(final ByteWriter output, final List<Object> values) throws SchemaException {
+        Objects.requireNonNull(output, "output");
+        Objects.requireNonNull(values, "values");
+
         if (values.size() != this.fields.size()) {
             throw new SchemaException("Wrong number of values, expected: %d, got: %d"
                     .formatted(this.fields.size(), values.size())
@@ -56,6 +60,8 @@ public record SchemaImpl(List<Field> fields, SchemaDefaults defaults) implements
 
     @Override
     public List<Object> read(final ByteReader input) {
+        Objects.requireNonNull(input, "input");
+
         final List<Object> values = new ArrayList<>(this.fields.size());
 
         for (final Field field : this.fields) {

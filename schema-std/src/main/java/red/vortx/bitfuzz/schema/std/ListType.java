@@ -7,6 +7,7 @@ import red.vortx.bitfuzz.schema.api.field.type.Type;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /// A list. An element count, then each element in order.
 ///
@@ -16,6 +17,11 @@ import java.util.List;
 /// @param lengthType  the type of the count prefix
 /// @param <T>         the type of the elements
 public record ListType<T>(Type<T> elementType, Type<Integer> lengthType) implements Type<List<T>> {
+
+    public ListType {
+        Objects.requireNonNull(elementType, "elementType");
+        Objects.requireNonNull(lengthType, "lengthType");
+    }
 
     @Override
     public void write(final ByteWriter output, final List<T> value) {

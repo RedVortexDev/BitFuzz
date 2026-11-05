@@ -13,6 +13,7 @@ import red.vortx.bitfuzz.schema.api.SchemaException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.random.RandomGenerator;
 
@@ -35,10 +36,13 @@ public record MutationRunner(Schema schema, SchemaGenerator generator, List<Muta
         if (mutators.isEmpty()) {
             throw new IllegalArgumentException("At least one mutator is required");
         }
-        this.schema = schema;
-        this.generator = generator;
+        if (maxFailures < 1) {
+            throw new IllegalArgumentException("maxFailures must be at least 1");
+        }
+        this.schema = Objects.requireNonNull(schema, "schema");
+        this.generator = Objects.requireNonNull(generator, "generator");
         this.mutators = List.copyOf(mutators);
-        this.shrinker = shrinker;
+        this.shrinker = Objects.requireNonNull(shrinker, "shrinker");
         this.maxFailures = maxFailures;
     }
 

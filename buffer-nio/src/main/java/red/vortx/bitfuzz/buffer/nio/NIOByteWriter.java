@@ -4,6 +4,7 @@ import red.vortx.bitfuzz.buffer.WriteOverflowException;
 import red.vortx.bitfuzz.buffer.impl.CheckedByteWriter;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 import static red.vortx.bitfuzz.buffer.nio.NIOBufferUtility.bigEndian;
 import static red.vortx.bitfuzz.buffer.nio.NIOBufferUtility.littleEndian;
@@ -19,7 +20,7 @@ public final class NIOByteWriter extends CheckedByteWriter {
     ///
     /// @param buffer the underlying [NIO ByteBuffer][ByteBuffer]
     public NIOByteWriter(final ByteBuffer buffer) {
-        this.buffer = buffer;
+        this.buffer = Objects.requireNonNull(buffer, "buffer");
     }
 
     @Override

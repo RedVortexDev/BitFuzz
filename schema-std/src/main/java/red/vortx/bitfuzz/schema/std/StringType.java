@@ -10,6 +10,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /// A UTF-8 string. Prefixed with its length in bytes.
 ///
@@ -18,6 +19,10 @@ import java.nio.charset.StandardCharsets;
 ///
 /// @param lengthType the type of the length prefix
 public record StringType(Type<Integer> lengthType) implements Type<String> {
+
+    public StringType {
+        Objects.requireNonNull(lengthType, "lengthType");
+    }
 
     @Override
     public void write(final ByteWriter output, final String value) {

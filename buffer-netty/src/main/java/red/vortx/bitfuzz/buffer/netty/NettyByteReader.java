@@ -3,6 +3,8 @@ package red.vortx.bitfuzz.buffer.netty;
 import io.netty.buffer.ByteBuf;
 import red.vortx.bitfuzz.buffer.impl.CheckedByteReader;
 
+import java.util.Objects;
+
 /// A reader for primitives backed by a [Netty ByteBuf][ByteBuf].
 public final class NettyByteReader extends CheckedByteReader {
 
@@ -12,7 +14,7 @@ public final class NettyByteReader extends CheckedByteReader {
     ///
     /// @param buffer the underlying [Netty ByteBuf][ByteBuf]
     public NettyByteReader(final ByteBuf buffer) {
-        this.buffer = buffer;
+        this.buffer = Objects.requireNonNull(buffer, "buffer");
     }
 
     @Override

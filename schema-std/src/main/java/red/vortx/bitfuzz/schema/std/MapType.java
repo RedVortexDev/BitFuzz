@@ -7,6 +7,7 @@ import red.vortx.bitfuzz.schema.api.field.type.Type;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /// A map. An entry count, then each key and value in iteration order. Reading keeps that order and rejects
 /// duplicate keys.
@@ -19,6 +20,12 @@ import java.util.Map;
 /// @param <K>        the type of the keys
 /// @param <V>        the type of the values
 public record MapType<K, V>(Type<K> keyType, Type<V> valueType, Type<Integer> lengthType) implements Type<Map<K, V>> {
+
+    public MapType {
+        Objects.requireNonNull(keyType, "keyType");
+        Objects.requireNonNull(valueType, "valueType");
+        Objects.requireNonNull(lengthType, "lengthType");
+    }
 
     @Override
     public void write(final ByteWriter output, final Map<K, V> value) {

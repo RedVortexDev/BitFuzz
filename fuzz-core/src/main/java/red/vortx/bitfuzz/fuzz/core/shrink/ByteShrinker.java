@@ -11,6 +11,12 @@ public record ByteShrinker(int maxAttempts) implements Shrinker {
 
     public static final int DEFAULT_MAX_ATTEMPTS = 5_000;
 
+    public ByteShrinker {
+        if (maxAttempts < 0) {
+            throw new IllegalArgumentException("maxAttempts must not be negative");
+        }
+    }
+
     public ByteShrinker() {
         this(DEFAULT_MAX_ATTEMPTS);
     }

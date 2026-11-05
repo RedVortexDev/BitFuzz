@@ -2,6 +2,7 @@ package red.vortx.bitfuzz.fuzz.core.generator.impl;
 
 import red.vortx.bitfuzz.fuzz.api.Generator;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.random.RandomGenerator;
 
@@ -10,6 +11,10 @@ import java.util.random.RandomGenerator;
 /// @param value the generator for present values
 /// @param <T>   the type of the value
 public record OptionalGenerator<T>(Generator<T> value) implements Generator<Optional<T>> {
+
+    public OptionalGenerator {
+        Objects.requireNonNull(value, "value");
+    }
 
     @Override
     public Optional<T> generate(final RandomGenerator random) {

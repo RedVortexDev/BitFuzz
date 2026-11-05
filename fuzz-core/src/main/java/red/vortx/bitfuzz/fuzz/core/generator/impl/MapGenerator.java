@@ -5,6 +5,7 @@ import red.vortx.bitfuzz.fuzz.core.generator.Sizes;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.random.RandomGenerator;
 
 /// Generates maps with unique keys.
@@ -18,6 +19,11 @@ import java.util.random.RandomGenerator;
 public record MapGenerator<K, V>(Generator<K> key, Generator<V> value) implements Generator<Map<K, V>> {
 
     private static final int ATTEMPTS_PER_ENTRY = 10;
+
+    public MapGenerator {
+        Objects.requireNonNull(key, "key");
+        Objects.requireNonNull(value, "value");
+    }
 
     @Override
     public Map<K, V> generate(final RandomGenerator random) {
