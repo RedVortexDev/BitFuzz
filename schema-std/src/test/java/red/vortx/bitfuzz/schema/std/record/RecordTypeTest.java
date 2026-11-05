@@ -8,12 +8,19 @@ import red.vortx.bitfuzz.schema.api.Endianness;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaBuilder;
 import red.vortx.bitfuzz.schema.api.SchemaException;
+import red.vortx.bitfuzz.schema.api.annotation.WireType;
+import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
 import red.vortx.bitfuzz.schema.std.Types;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -52,8 +59,37 @@ class RecordTypeTest {
     record Node(int value, List<Node> children) {
     }
 
+    record Leaderboard(Point best, List<Integer> scores) {
+    }
+
+    record Mixed(int small, @Fixed int big) {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE_USE)
+    @WireType(Fixed.Spec.class)
+    @interface Fixed {
+
+        final class Spec implements Supplier<TypeSpec<?>> {
+
+            @Override
+            public TypeSpec<?> get() {
+                return Types.INT;
+            }
+
+        }
+
+    }
+
     private static Schema schemaOf(final Class<? extends Record> recordClass) {
         return SchemaBuilder.create().field(Types.record(recordClass), "value").build();
+    }
+
+    private static Schema varIntSchemaOf(final Class<? extends Record> recordClass) {
+        return SchemaBuilder.create()
+                .defaults(defaults -> defaults.recordType(Integer.class, Types.VAR_INT))
+                .field(Types.record(recordClass), "value")
+                .build();
     }
 
     private static Object roundTrip(final Schema schema, final Object value) {
@@ -92,6 +128,33 @@ class RecordTypeTest {
                 .build();
 
         assertThat(written(out -> schema.write(out, List.of(new Point(1, 2))))).containsExactly(1, 0, 0, 0, 2, 0, 0, 0);
+    }
+
+    @Test
+    void schemaDefaultsCanReplaceTheTypeOfAJavaType() {
+        final Schema schema = varIntSchemaOf(Point.class);
+
+        assertThat(written(out -> schema.write(out, List.of(new Point(1, 2)))))
+                .as("int components as varints, registered as Integer")
+                .containsExactly(1, 2);
+    }
+
+    @Test
+    void replacedTypesApplyInsideNestedRecordsAndContainers() {
+        final Schema schema = varIntSchemaOf(Leaderboard.class);
+        final Leaderboard leaderboard = new Leaderboard(new Point(1, 2), List.of(300));
+
+        assertThat(written(out -> schema.write(out, List.of(leaderboard))))
+                .as("list length keeps the schema length type")
+                .containsExactly(1, 2, 0, 0, 0, 1, 0xAC, 0x02);
+        assertThat(roundTrip(schema, leaderboard)).isEqualTo(leaderboard);
+    }
+
+    @Test
+    void wireTypeAnnotationsWinOverSchemaDefaults() {
+        final Schema schema = varIntSchemaOf(Mixed.class);
+
+        assertThat(written(out -> schema.write(out, List.of(new Mixed(1, 2))))).containsExactly(1, 0, 0, 0, 2);
     }
 
     @Test
@@ -139,6 +202,18 @@ class RecordTypeTest {
 
         final FuzzResult roundTrip = Fuzz.roundTrip(schema, 5_000, 42);
         final FuzzResult mutated = Fuzz.mutate(schema, 20_000, 42);
+
+        assertThat(roundTrip.isClean()).as(roundTrip.report()).isTrue();
+        assertThat(mutated.isClean()).as(mutated.report()).isTrue();
+    }
+
+    @Test
+    @Timeout(60)
+    void replacedTypesSurviveFuzzing() {
+        final Schema schema = varIntSchemaOf(Leaderboard.class);
+
+        final FuzzResult roundTrip = Fuzz.roundTrip(schema, 2_000, 42);
+        final FuzzResult mutated = Fuzz.mutate(schema, 5_000, 42);
 
         assertThat(roundTrip.isClean()).as(roundTrip.report()).isTrue();
         assertThat(mutated.isClean()).as(mutated.report()).isTrue();

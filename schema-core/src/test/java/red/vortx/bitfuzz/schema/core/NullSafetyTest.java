@@ -38,6 +38,15 @@ class NullSafetyTest {
                 .isThrownBy(() -> new SchemaBuilderImpl().defaults(defaults -> defaults.lengthType(null)))
                 .withMessage("lengthType");
         assertThatNullPointerException()
+                .isThrownBy(() -> new SchemaBuilderImpl().defaults(defaults -> defaults.recordType(null, Primitives.INT)))
+                .withMessage("javaType");
+        assertThatNullPointerException()
+                .isThrownBy(() -> new SchemaBuilderImpl().defaults(defaults -> defaults.recordType(Integer.class, null)))
+                .withMessage("type");
+        assertThatNullPointerException()
+                .isThrownBy(() -> SchemaDefaultsImpl.initial().recordType(null))
+                .withMessage("javaType");
+        assertThatNullPointerException()
                 .isThrownBy(() -> new SchemaDefaultsImpl(null, Primitives.INT))
                 .withMessage("endianness");
     }
