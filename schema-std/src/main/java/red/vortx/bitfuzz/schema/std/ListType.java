@@ -3,6 +3,7 @@ package red.vortx.bitfuzz.schema.std;
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
 import red.vortx.bitfuzz.schema.api.SchemaException;
+import red.vortx.bitfuzz.schema.api.field.type.CompositeType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.Objects;
 /// @param elementType the type of the elements
 /// @param lengthType  the type of the count prefix
 /// @param <T>         the type of the elements
-public record ListType<T>(Type<T> elementType, Type<Integer> lengthType) implements Type<List<T>> {
+public record ListType<T>(Type<T> elementType, Type<Integer> lengthType) implements CompositeType<List<T>> {
 
     public ListType {
         Objects.requireNonNull(elementType, "elementType");
@@ -56,6 +57,18 @@ public record ListType<T>(Type<T> elementType, Type<Integer> lengthType) impleme
     public Class<List<T>> javaType() {
         //noinspection unchecked
         return (Class<List<T>>) (Class<?>) List.class;
+    }
+
+    @Override
+    public List<Part> parts(final List<T> value) {
+        final List<Part> parts = new ArrayList<>(value.size() + 1);
+
+        parts.add(new Part("length", this.lengthType, value.size()));
+        for (int i = 0; i < value.size(); i++) {
+            parts.add(new Part("[%d]".formatted(i), this.elementType, value.get(i)));
+        }
+
+        return parts;
     }
 
 }

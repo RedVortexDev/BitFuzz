@@ -28,4 +28,10 @@ class BytesTest {
         assertThat(Bytes.decode(SCHEMA, Bytes.encode(SCHEMA, values))).isEqualTo(values);
     }
 
+    @Test
+    void hex() {
+        assertThat(Bytes.hex(new byte[]{0x7F, (byte) 0xFF, 0x00})).isEqualTo("7f ff 00");
+        assertThat(Bytes.hex(new byte[0])).isEmpty();
+    }
+
 }

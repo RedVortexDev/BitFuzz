@@ -57,6 +57,13 @@ public enum Types {
         return defaults -> new StringType(lengthType.resolve(defaults));
     }
 
+    /// A fixed-length UTF-8 string. No length prefix and not padded.
+    ///
+    /// @param byteLength the number of bytes
+    public static Type<String> fixedString(final int byteLength) {
+        return new FixedStringType(byteLength);
+    }
+
     // Variable-length
 
     public static final Type<Integer> VAR_INT = new VarIntType();

@@ -3,9 +3,12 @@ package red.vortx.bitfuzz.schema.std;
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
 import red.vortx.bitfuzz.schema.api.SchemaException;
+import red.vortx.bitfuzz.schema.api.field.type.CompositeType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -19,7 +22,8 @@ import java.util.Objects;
 /// @param lengthType the type of the count prefix
 /// @param <K>        the type of the keys
 /// @param <V>        the type of the values
-public record MapType<K, V>(Type<K> keyType, Type<V> valueType, Type<Integer> lengthType) implements Type<Map<K, V>> {
+public record MapType<K, V>(Type<K> keyType, Type<V> valueType,
+                            Type<Integer> lengthType) implements CompositeType<Map<K, V>> {
 
     public MapType {
         Objects.requireNonNull(keyType, "keyType");
@@ -65,6 +69,21 @@ public record MapType<K, V>(Type<K> keyType, Type<V> valueType, Type<Integer> le
     public Class<Map<K, V>> javaType() {
         //noinspection unchecked
         return (Class<Map<K, V>>) (Class<?>) Map.class;
+    }
+
+    @Override
+    public List<Part> parts(final Map<K, V> value) {
+        final List<Part> parts = new ArrayList<>(value.size() * 2 + 1);
+
+        parts.add(new Part("length", this.lengthType, value.size()));
+        int index = 0;
+        for (final Map.Entry<K, V> entry : value.entrySet()) {
+            parts.add(new Part("[%d].key".formatted(index), this.keyType, entry.getKey()));
+            parts.add(new Part("[%d].value".formatted(index), this.valueType, entry.getValue()));
+            index++;
+        }
+
+        return parts;
     }
 
 }

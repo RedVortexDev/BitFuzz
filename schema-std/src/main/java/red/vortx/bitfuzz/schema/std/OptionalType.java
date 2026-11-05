@@ -3,8 +3,10 @@ package red.vortx.bitfuzz.schema.std;
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
 import red.vortx.bitfuzz.schema.api.SchemaException;
+import red.vortx.bitfuzz.schema.api.field.type.CompositeType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -13,7 +15,7 @@ import java.util.Optional;
 ///
 /// @param valueType the type of the value
 /// @param <T>       the type of the value
-public record OptionalType<T>(Type<T> valueType) implements Type<Optional<T>> {
+public record OptionalType<T>(Type<T> valueType) implements CompositeType<Optional<T>> {
 
     private static final byte EMPTY = 0;
     private static final byte PRESENT = 1;
@@ -46,6 +48,16 @@ public record OptionalType<T>(Type<T> valueType) implements Type<Optional<T>> {
     public Class<Optional<T>> javaType() {
         //noinspection unchecked
         return (Class<Optional<T>>) (Class<?>) Optional.class;
+    }
+
+    @Override
+    public List<Part> parts(final Optional<T> value) {
+        final Part presence = new Part("present", Types.BOOL, value.isPresent());
+        if (value.isEmpty()) {
+            return List.of(presence);
+        }
+
+        return List.of(presence, new Part("", this.valueType, value.get()));
     }
 
 }

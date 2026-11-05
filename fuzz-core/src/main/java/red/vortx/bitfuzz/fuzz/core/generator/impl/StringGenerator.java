@@ -5,7 +5,7 @@ import red.vortx.bitfuzz.fuzz.api.Generator;
 import java.util.List;
 import java.util.random.RandomGenerator;
 
-/// Generates strings mixing ASCII and 2, 3, and 4 byte UTF-8 characters, plus fixed-edge strings.
+/// Generates strings mixing ASCII and 2 to 4 byte UTF-8 characters, plus edge-case strings.
 public record StringGenerator() implements Generator<String> {
 
     private static final List<String> EDGES = List.of("", " ", "\0", "é", "日本語", "😀", "\uFEFF", "a\u0301");

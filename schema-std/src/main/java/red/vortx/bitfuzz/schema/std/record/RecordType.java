@@ -3,11 +3,13 @@ package red.vortx.bitfuzz.schema.std.record;
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
 import red.vortx.bitfuzz.schema.api.SchemaException;
+import red.vortx.bitfuzz.schema.api.field.type.CompositeType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,7 +22,7 @@ import java.util.Objects;
 /// @param constructor the canonical constructor
 /// @param <R>         the record type
 public record RecordType<R extends Record>(Class<R> javaType, List<Component> components,
-                                           Constructor<R> constructor) implements Type<R> {
+                                           Constructor<R> constructor) implements CompositeType<R> {
 
     public RecordType {
         Objects.requireNonNull(javaType, "javaType");
@@ -69,6 +71,16 @@ public record RecordType<R extends Record>(Class<R> javaType, List<Component> co
         } catch (final ReflectiveOperationException e) {
             throw new IllegalStateException("Cannot construct %s".formatted(this.javaType.getName()), e);
         }
+    }
+
+    @Override
+    public List<Part> parts(final R value) {
+        final List<Part> parts = new ArrayList<>(this.components.size());
+        for (final Component component : this.components) {
+            parts.add(new Part(component.name(), component.type(), this.getComponentValue(component, value)));
+        }
+
+        return parts;
     }
 
     private Object getComponentValue(final Component component, final R value) {

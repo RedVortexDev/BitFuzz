@@ -6,11 +6,14 @@ import red.vortx.bitfuzz.buffer.nio.NIOByteWriter;
 import red.vortx.bitfuzz.schema.api.Schema;
 
 import java.nio.ByteBuffer;
+import java.util.HexFormat;
 import java.util.List;
 
 /// Converts between schema values and plain byte arrays.
 public enum Bytes {
     ;
+
+    private static final HexFormat HEX = HexFormat.ofDelimiter(" ");
 
     /// {@return `values` encoded with `schema`}
     public static byte[] encode(final Schema schema, final List<Object> values) {
@@ -25,6 +28,11 @@ public enum Bytes {
     /// {@return the values decoded from `bytes`, ignoring any bytes left over}
     public static List<Object> decode(final Schema schema, final byte[] bytes) {
         return schema.read(new NIOByteReader(ByteBuffer.wrap(bytes)));
+    }
+
+    /// {@return `bytes` as space-separated hex, like `0a ff`}
+    public static String hex(final byte[] bytes) {
+        return HEX.formatHex(bytes);
     }
 
 }

@@ -3,13 +3,10 @@ package red.vortx.bitfuzz.schema.std;
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
 import red.vortx.bitfuzz.schema.api.SchemaException;
+import red.vortx.bitfuzz.schema.api.field.type.CompositeType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.CodingErrorAction;
-import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 
 /// A UTF-8 string. Prefixed with its length in bytes.
@@ -18,7 +15,7 @@ import java.util.Objects;
 /// [SchemaException].
 ///
 /// @param lengthType the type of the length prefix
-public record StringType(Type<Integer> lengthType) implements Type<String> {
+public record StringType(Type<Integer> lengthType) implements CompositeType<String> {
 
     public StringType {
         Objects.requireNonNull(lengthType, "lengthType");
@@ -26,7 +23,7 @@ public record StringType(Type<Integer> lengthType) implements Type<String> {
 
     @Override
     public void write(final ByteWriter output, final String value) {
-        final byte[] bytes = encode(value);
+        final byte[] bytes = Utf8.encode(value);
         this.lengthType.write(output, bytes.length);
         output.writeBytes(bytes);
     }
@@ -46,7 +43,7 @@ public record StringType(Type<Integer> lengthType) implements Type<String> {
 
         final byte[] bytes = new byte[length];
         input.readBytes(bytes);
-        return decode(bytes);
+        return Utf8.decode(bytes);
     }
 
     @Override
@@ -56,34 +53,18 @@ public record StringType(Type<Integer> lengthType) implements Type<String> {
 
     @Override
     public int sizeOf(final String value) {
-        final int length = encode(value).length;
+        final int length = Utf8.encode(value).length;
         return this.lengthType.sizeOf(length) + length;
     }
 
-    private static byte[] encode(final String value) {
-        try {
-            final ByteBuffer encoded = StandardCharsets.UTF_8.newEncoder()
-                    .onMalformedInput(CodingErrorAction.REPORT)
-                    .onUnmappableCharacter(CodingErrorAction.REPORT)
-                    .encode(CharBuffer.wrap(value));
-            final byte[] bytes = new byte[encoded.remaining()];
-            encoded.get(bytes);
-            return bytes;
-        } catch (final CharacterCodingException e) {
-            throw new SchemaException("String is not valid UTF-16 and cannot be encoded as UTF-8", e);
-        }
-    }
+    @Override
+    public List<Part> parts(final String value) {
+        final int length = Utf8.encode(value).length;
 
-    private static String decode(final byte[] bytes) {
-        try {
-            return StandardCharsets.UTF_8.newDecoder()
-                    .onMalformedInput(CodingErrorAction.REPORT)
-                    .onUnmappableCharacter(CodingErrorAction.REPORT)
-                    .decode(ByteBuffer.wrap(bytes))
-                    .toString();
-        } catch (final CharacterCodingException e) {
-            throw new SchemaException("String bytes are not valid UTF-8", e);
-        }
+        return List.of(
+                new Part("length", this.lengthType, length),
+                new Part("", new FixedStringType(length), value)
+        );
     }
 
 }
