@@ -3,7 +3,7 @@ package red.vortx.bitfuzz.fuzz.core.generator;
 import red.vortx.bitfuzz.fuzz.api.Generator;
 import red.vortx.bitfuzz.fuzz.api.GeneratorLookup;
 import red.vortx.bitfuzz.fuzz.api.GeneratorProvider;
-import red.vortx.bitfuzz.fuzz.core.generator.provider.ContainerProvider;
+import red.vortx.bitfuzz.fuzz.core.generator.provider.StandardTypeProvider;
 import red.vortx.bitfuzz.fuzz.core.generator.provider.JavaTypeProvider;
 import red.vortx.bitfuzz.fuzz.core.generator.provider.RecordProvider;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
@@ -18,7 +18,7 @@ import java.util.Optional;
 public record Generators(List<GeneratorProvider> providers) implements GeneratorLookup {
 
     private static final Generators STANDARD = new Generators(List.of(
-            new ContainerProvider(),
+            new StandardTypeProvider(),
             new RecordProvider(),
             JavaTypeProvider.standard()
     ));

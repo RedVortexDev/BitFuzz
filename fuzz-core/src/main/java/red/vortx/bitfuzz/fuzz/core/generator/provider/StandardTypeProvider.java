@@ -15,8 +15,8 @@ import red.vortx.bitfuzz.schema.std.OptionalType;
 
 import java.util.Optional;
 
-/// Provides generators for the standard library container types.
-public record ContainerProvider() implements GeneratorProvider {
+/// Provides generators for `schema-std` types that need more than their [Java type][Type#javaType()].
+public record StandardTypeProvider() implements GeneratorProvider {
 
     @Override
     public <T> Optional<Generator<T>> create(final Type<T> type, final GeneratorLookup lookup) {

@@ -8,7 +8,7 @@ import red.vortx.bitfuzz.fuzz.api.Generator;
 import red.vortx.bitfuzz.fuzz.api.GeneratorLookup;
 import red.vortx.bitfuzz.fuzz.api.GeneratorProvider;
 import red.vortx.bitfuzz.fuzz.core.Bytes;
-import red.vortx.bitfuzz.fuzz.core.generator.provider.ContainerProvider;
+import red.vortx.bitfuzz.fuzz.core.generator.provider.StandardTypeProvider;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.field.type.SimpleType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
@@ -134,7 +134,7 @@ class GeneratorsTest {
     @Test
     void withDoesNotChangeOriginal() {
         final int before = REGISTRY.providers().size();
-        final Generators extended = REGISTRY.with(new ContainerProvider());
+        final Generators extended = REGISTRY.with(new StandardTypeProvider());
 
         assertThat(extended.providers()).hasSize(before + 1);
         assertThat(REGISTRY.providers()).hasSize(before);

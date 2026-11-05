@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-/// Provides generators for single-value types by their [Java type][Type#javaType()].
+/// Provides generators for types derived from their [Java type][Type#javaType()].
 ///
 /// @param generators the generator for each Java type
 public record JavaTypeProvider(Map<Class<?>, Generator<?>> generators) implements GeneratorProvider {
