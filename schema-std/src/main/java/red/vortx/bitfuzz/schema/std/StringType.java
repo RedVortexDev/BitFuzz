@@ -11,8 +11,7 @@ import java.util.Objects;
 
 /// A UTF-8 string. Prefixed with its length in bytes.
 ///
-/// Strict encoding and decoding, paired surrogates when writing and malformed UTF-8 when reading throw
-/// [SchemaException].
+/// Writing a string with an unpaired surrogate, or reading malformed UTF-8, throws [SchemaException].
 ///
 /// @param lengthType the type of the length prefix
 public record StringType(Type<Integer> lengthType) implements CompositeType<String> {

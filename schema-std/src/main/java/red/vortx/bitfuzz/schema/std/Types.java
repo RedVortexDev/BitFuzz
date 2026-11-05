@@ -20,7 +20,7 @@ public enum Types {
 
     // Primitive + endianness aware
 
-    /// A byte. Follows schema default endianness.
+    /// A byte.
     public static final Type<Byte> BYTE = Primitives.BYTE;
     /// A big-endian short.
     public static final Type<Short> SHORT_BE = Primitives.SHORT;
@@ -69,13 +69,13 @@ public enum Types {
 
     /// A UTF-8 string. Prefixed with its length in bytes.
     ///
-    /// Strict encoding and decoding, paired surrogates when writing and malformed UTF-8 when reading throw
+    /// Strict encoding and decoding, unpaired surrogates when writing and malformed UTF-8 when reading throw
     /// [SchemaException].
     public static final TypeSpec<String> STRING = defaults -> new StringType(defaults.lengthType());
 
     /// A UTF-8 string. Prefixed with its length in bytes.
     ///
-    /// Strict encoding and decoding, paired surrogates when writing and malformed UTF-8 when reading throw
+    /// Strict encoding and decoding, unpaired surrogates when writing and malformed UTF-8 when reading throw
     /// [SchemaException].
     ///
     /// @param lengthType the type of the length prefix
@@ -103,7 +103,8 @@ public enum Types {
     /// A variable-length 64-bit integer. Encoded like [VarIntType] but up to 10 bytes. Negative values always take
     /// 10 bytes.
     ///
-    /// Reading rejects encodings longer than 10 bytes and a 10th byte that carries bits beyond 64.
+    /// Reading rejects encodings longer than 10 bytes and a 10th byte that carries bits beyond 64. Overlong but
+    /// otherwise valid encodings are accepted.
     public static final Type<Long> VAR_LONG = new VarLongType();
 
     // Collections

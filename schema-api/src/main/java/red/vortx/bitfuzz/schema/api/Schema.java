@@ -2,6 +2,7 @@ package red.vortx.bitfuzz.schema.api;
 
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
+import red.vortx.bitfuzz.buffer.WriteOverflowException;
 import red.vortx.bitfuzz.schema.api.field.Field;
 
 import java.util.List;
@@ -15,7 +16,8 @@ public interface Schema {
     ///
     /// @param output the output to write to
     /// @param values the values to write
-    /// @throws SchemaException for any error that occurs while writing the values
+    /// @throws SchemaException        if the values don't match the fields or a type rejects a value
+    /// @throws WriteOverflowException if `output` runs out of space
     void write(ByteWriter output, List<Object> values) throws SchemaException;
 
     /// Reads one value per field from the given input. Bytes after the last field are left unread.
@@ -24,7 +26,7 @@ public interface Schema {
     ///
     /// @param input the input to read from
     /// @return the read values
-    /// @throws SchemaException for any error that occurs while reading the values
+    /// @throws SchemaException if the bytes are invalid or run out
     List<Object> read(ByteReader input) throws SchemaException;
 
     /// {@return the fields of this schema}

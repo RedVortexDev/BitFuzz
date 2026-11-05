@@ -12,7 +12,7 @@ public interface Mutator {
     /// @return the mutated bytes
     byte[] mutate(byte[] input, RandomGenerator random);
 
-    /// {@return a short name used in failure reports}
+    /// {@return a short name for this mutator}
     default String name() {
         return this.getClass().getSimpleName();
     }
