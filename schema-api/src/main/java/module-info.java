@@ -6,6 +6,7 @@ module red.vortx.bitfuzz.schema.api {
     requires transitive red.vortx.bitfuzz.buffer;
 
     exports red.vortx.bitfuzz.schema.api;
+    exports red.vortx.bitfuzz.schema.api.annotation;
     exports red.vortx.bitfuzz.schema.api.field;
     exports red.vortx.bitfuzz.schema.api.field.type;
 

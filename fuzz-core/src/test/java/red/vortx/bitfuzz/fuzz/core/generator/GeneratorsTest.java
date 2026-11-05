@@ -133,10 +133,11 @@ class GeneratorsTest {
 
     @Test
     void withDoesNotChangeOriginal() {
+        final int before = REGISTRY.providers().size();
         final Generators extended = REGISTRY.with(new ContainerProvider());
 
-        assertThat(extended.providers()).hasSize(REGISTRY.providers().size() + 1);
-        assertThat(REGISTRY.providers()).hasSize(2);
+        assertThat(extended.providers()).hasSize(before + 1);
+        assertThat(REGISTRY.providers()).hasSize(before);
     }
 
 }

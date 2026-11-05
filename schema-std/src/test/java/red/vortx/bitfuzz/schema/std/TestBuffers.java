@@ -10,20 +10,20 @@ import red.vortx.bitfuzz.buffer.netty.NettyByteWriter;
 
 import java.util.function.Consumer;
 
-enum TestBuffers {
+public enum TestBuffers {
     ;
 
-    static byte[] written(final Consumer<ByteWriter> write) {
+    public static byte[] written(final Consumer<ByteWriter> write) {
         final ByteBuf buffer = Unpooled.buffer();
         write.accept(new NettyByteWriter(buffer));
         return ByteBufUtil.getBytes(buffer);
     }
 
-    static ByteReader reader(final byte[] bytes) {
+    public static ByteReader reader(final byte[] bytes) {
         return new NettyByteReader(Unpooled.wrappedBuffer(bytes));
     }
 
-    static ByteReader reader(final int... bytes) {
+    public static ByteReader reader(final int... bytes) {
         final byte[] array = new byte[bytes.length];
         for (int i = 0; i < bytes.length; i++) {
             array[i] = (byte) bytes[i];

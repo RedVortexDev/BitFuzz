@@ -5,6 +5,7 @@ import red.vortx.bitfuzz.schema.api.field.type.SimpleType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
 import red.vortx.bitfuzz.schema.core.Primitives;
+import red.vortx.bitfuzz.schema.std.record.RecordMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -111,6 +112,17 @@ public enum Types {
         Objects.requireNonNull(valueType, "valueType");
 
         return defaults -> new OptionalType<>(valueType.resolve(defaults));
+    }
+
+    // Records
+
+    /// A record. Each component in declaration order, typed as described in [RecordMapper].
+    ///
+    /// @param recordClass the record class
+    /// @param <R>         the record type
+    /// @return a spec for the record
+    public static <R extends Record> TypeSpec<R> record(final Class<R> recordClass) {
+        return RecordMapper.spec(recordClass);
     }
 
 }
