@@ -6,6 +6,13 @@ plugins {
     id("bitfuzz.java-library")
 }
 
+mavenPublishing {
+    pom {
+        name = "BitFuzz Schema API"
+        description = "API for defining binary protocol schemas."
+    }
+}
+
 dependencies {
     api(project(":buffer"))
 }

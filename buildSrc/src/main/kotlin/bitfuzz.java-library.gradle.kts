@@ -4,10 +4,11 @@
 
 plugins {
     `java-library`
+    id("com.vanniktech.maven.publish")
 }
 
 group = "red.vortx.bitfuzz"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 java {
     toolchain {
@@ -29,4 +30,38 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     maxHeapSize = "1g"
+}
+
+tasks.javadoc {
+    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:all,-missing", "-quiet")
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+
+    pom {
+        url = "https://github.com/RedVortexDev/BitFuzz"
+
+        licenses {
+            license {
+                name = "Apache-2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0"
+            }
+        }
+
+        developers {
+            developer {
+                id = "RedVortexDev"
+                name = "Red"
+                url = "https://github.com/RedVortexDev"
+            }
+        }
+
+        scm {
+            url = "https://github.com/RedVortexDev/BitFuzz"
+            connection = "scm:git:https://github.com/RedVortexDev/BitFuzz.git"
+            developerConnection = "scm:git:ssh://git@github.com/RedVortexDev/BitFuzz.git"
+        }
+    }
 }

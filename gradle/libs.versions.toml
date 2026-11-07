@@ -1,13 +1,15 @@
 [versions]
+publish = "0.37.0"
+
 netty = "4.2.19.Final"
-
-junit = "6.0.0"
-
 jspecify = "1.0.1"
 
+junit = "6.0.0"
 assertj = "3.27.7"
 
 [libraries]
+publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "publish" }
+
 netty-buffer = { module = "io.netty:netty-buffer", version.ref = "netty" }
 
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }

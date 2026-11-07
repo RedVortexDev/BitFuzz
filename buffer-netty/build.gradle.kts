@@ -6,6 +6,13 @@ plugins {
     id("bitfuzz.java-library")
 }
 
+mavenPublishing {
+    pom {
+        name = "BitFuzz Buffer Netty"
+        description = "BitFuzz byte reader and writer backed by a Netty ByteBuf."
+    }
+}
+
 dependencies {
     api(project(":buffer"))
     api(libs.netty.buffer)

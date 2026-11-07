@@ -6,6 +6,13 @@ plugins {
     id("bitfuzz.java-library")
 }
 
+mavenPublishing {
+    pom {
+        name = "BitFuzz Schema Std"
+        description = "Standard library of BitFuzz schema types."
+    }
+}
+
 dependencies {
     api(project(":schema-core"))
 
