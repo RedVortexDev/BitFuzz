@@ -1,1 +1,5 @@
 - Polymorphism via sealed interfaces and records that implement them
+- Raw bytes?
+- Enums
+- Fields that depend on previous fields
+- JUnit integration
