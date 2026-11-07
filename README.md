@@ -409,6 +409,21 @@ Project is built with Java 25
 
 ## Usage
 
-## Licence
+This project is published to Maven Central, one artifact per submodule.
+
+Examples for
+
+Gradle (Kotlin DSL):
+
+```kotlin
+dependencies {
+    implementation("red.vortx.bitfuzz:schema-std:1.0.0") // standard brings in api and core
+    implementation("red.vortx.bitfuzz:buffer-netty:1.0.0") // netty buffer
+
+    testImplementation("red.vortx.bitfuzz:fuzz-core:1.0.0") // fuzzing as a test dependency
+}
+```
+
+## License
 
 Licensed under the Apache License, Version 2.0.
