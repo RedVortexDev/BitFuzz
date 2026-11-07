@@ -1,11 +1,15 @@
+// This file is part of BitFuzz.
+// SPDX-FileCopyrightText: 2026 RedVortexDev
+// SPDX-License-Identifier: Apache-2.0
+
 package red.vortx.bitfuzz.fuzz.core.generator;
 
 import red.vortx.bitfuzz.fuzz.api.Generator;
 import red.vortx.bitfuzz.fuzz.api.GeneratorLookup;
 import red.vortx.bitfuzz.fuzz.api.GeneratorProvider;
-import red.vortx.bitfuzz.fuzz.core.generator.provider.StandardTypeProvider;
 import red.vortx.bitfuzz.fuzz.core.generator.provider.JavaTypeProvider;
 import red.vortx.bitfuzz.fuzz.core.generator.provider.RecordProvider;
+import red.vortx.bitfuzz.fuzz.core.generator.provider.StandardTypeProvider;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 
 import java.util.ArrayList;

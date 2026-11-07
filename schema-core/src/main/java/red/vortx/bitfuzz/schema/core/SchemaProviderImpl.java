@@ -1,3 +1,7 @@
+// This file is part of BitFuzz.
+// SPDX-FileCopyrightText: 2026 RedVortexDev
+// SPDX-License-Identifier: Apache-2.0
+
 package red.vortx.bitfuzz.schema.core;
 
 import red.vortx.bitfuzz.schema.api.SchemaBuilder;

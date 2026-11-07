@@ -1,0 +1,8 @@
+<component name="CopyrightManager">
+  <copyright>
+    <option name="allowReplaceRegexp" value="SPDX" />
+    <option name="keyword" value="SPDX-License-Identifier" />
+    <option name="notice" value="This file is part of &amp;#36;project.name.&#10;SPDX-FileCopyrightText: &amp;#36;originalComment.match(&quot;SPDX-FileCopyrightText: (\d+)&quot;, 1, &quot;-&quot;, &quot;&amp;#36;today.year&quot;)&amp;#36;today.year RedVortexDev&#10;SPDX-License-Identifier: Apache-2.0" />
+    <option name="myName" value="Project" />
+  </copyright>
+</component>

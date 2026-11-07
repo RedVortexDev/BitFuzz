@@ -1,3 +1,7 @@
+// This file is part of BitFuzz.
+// SPDX-FileCopyrightText: 2026 RedVortexDev
+// SPDX-License-Identifier: Apache-2.0
+
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }

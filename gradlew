@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# This file is part of BitFuzz.
+# SPDX-FileCopyrightText: 2026 RedVortexDev
+# SPDX-License-Identifier: Apache-2.0
+
 #
 # Copyright © 2015-2021 the original authors.
 #

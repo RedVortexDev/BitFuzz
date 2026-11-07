@@ -1,6 +1,9 @@
+// This file is part of BitFuzz.
+// SPDX-FileCopyrightText: 2026 RedVortexDev
+// SPDX-License-Identifier: Apache-2.0
+
 package red.vortx.bitfuzz.buffer.nio;
 
-import red.vortx.bitfuzz.buffer.WriteOverflowException;
 import red.vortx.bitfuzz.buffer.impl.CheckedByteWriter;
 
 import java.nio.ByteBuffer;

@@ -1,3 +1,7 @@
+// This file is part of BitFuzz.
+// SPDX-FileCopyrightText: 2026 RedVortexDev
+// SPDX-License-Identifier: Apache-2.0
+
 package red.vortx.bitfuzz.fuzz.core;
 
 import red.vortx.bitfuzz.buffer.impl.CountingByteWriter;
@@ -6,12 +10,7 @@ import red.vortx.bitfuzz.schema.api.field.Field;
 import red.vortx.bitfuzz.schema.api.field.type.CompositeType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HexFormat;
-import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 /// Shows which value each byte of an encoding belongs to.
 /// ```
