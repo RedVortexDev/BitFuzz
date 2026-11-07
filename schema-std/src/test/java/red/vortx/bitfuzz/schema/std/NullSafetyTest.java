@@ -5,7 +5,11 @@
 package red.vortx.bitfuzz.schema.std;
 
 import org.junit.jupiter.api.Test;
-import red.vortx.bitfuzz.schema.std.type.*;
+import red.vortx.bitfuzz.schema.std.type.ListType;
+import red.vortx.bitfuzz.schema.std.type.MapType;
+import red.vortx.bitfuzz.schema.std.type.OptionalType;
+import red.vortx.bitfuzz.schema.std.type.StringType;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 

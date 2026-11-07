@@ -10,7 +10,12 @@ import red.vortx.bitfuzz.schema.api.field.Field;
 import red.vortx.bitfuzz.schema.api.field.type.CompositeType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HexFormat;
+import java.util.List;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /// Shows which value each byte of an encoding belongs to.
 /// ```
@@ -201,9 +206,11 @@ public enum WireDump {
     }
 
     private record Segment(int size, String label) {
+
     }
 
     private record Span(int start, int end, String label) {
+
     }
 
     private record Label(int column, String text) {

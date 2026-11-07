@@ -13,7 +13,11 @@ import red.vortx.bitfuzz.schema.core.Primitives;
 import red.vortx.bitfuzz.schema.std.key.SchemaStandardKeys;
 import red.vortx.bitfuzz.schema.std.type.record.RecordMapper;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 /// Standard types that can be used in a schema. Includes endianness aware types and extended types.
 public enum Types {
@@ -142,10 +146,10 @@ public enum Types {
     /// A map. An entry count followed by each key and value in iteration order. Reading returns a map that keeps the
     /// order of the bytes and rejects duplicate keys.
     ///
-    /// @param keyType    the type of the keys
-    /// @param valueType  the type of the values
-    /// @param <K>        the type of the keys
-    /// @param <V>        the type of the values
+    /// @param keyType   the type of the keys
+    /// @param valueType the type of the values
+    /// @param <K>       the type of the keys
+    /// @param <V>       the type of the values
     public static <K, V> TypeSpec<Map<K, V>> map(final TypeSpec<K> keyType, final TypeSpec<V> valueType) {
         return map(keyType, valueType, LENGTH);
     }

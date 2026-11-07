@@ -39,6 +39,7 @@ import static red.vortx.bitfuzz.schema.std.TestBuffers.written;
 class RecordTypeTest {
 
     record Point(int x, int y) {
+
     }
 
     record Player(
@@ -50,6 +51,7 @@ class RecordTypeTest {
             boolean online,
             Point spawn
     ) {
+
     }
 
     record Positive(int value) {
@@ -63,15 +65,19 @@ class RecordTypeTest {
     }
 
     record Unsupported(StringBuilder text) {
+
     }
 
     record Node(int value, List<Node> children) {
+
     }
 
     record Leaderboard(Point best, List<Integer> scores) {
+
     }
 
     record Mixed(int small, @Fixed int big) {
+
     }
 
     @Retention(RetentionPolicy.RUNTIME)

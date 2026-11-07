@@ -4,7 +4,12 @@
 
 package red.vortx.bitfuzz.fuzz.core.runner;
 
-import red.vortx.bitfuzz.fuzz.api.*;
+import red.vortx.bitfuzz.fuzz.api.FuzzFailure;
+import red.vortx.bitfuzz.fuzz.api.FuzzResult;
+import red.vortx.bitfuzz.fuzz.api.FuzzRunner;
+import red.vortx.bitfuzz.fuzz.api.GeneratorLookup;
+import red.vortx.bitfuzz.fuzz.api.Mutator;
+import red.vortx.bitfuzz.fuzz.api.Shrinker;
 import red.vortx.bitfuzz.fuzz.core.Bytes;
 import red.vortx.bitfuzz.fuzz.core.generator.impl.SchemaGenerator;
 import red.vortx.bitfuzz.schema.api.Schema;

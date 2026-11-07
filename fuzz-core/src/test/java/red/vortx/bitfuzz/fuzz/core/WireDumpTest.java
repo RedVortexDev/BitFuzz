@@ -24,9 +24,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WireDumpTest {
 
     record Point(int x, int y) {
+
     }
 
     record Profile(String name, List<Integer> scores, Optional<Point> home, Map<String, Boolean> flags) {
+
     }
 
     private static final Schema PLAYER = SchemaBuilder.create()
@@ -68,14 +70,14 @@ class WireDumpTest {
                  │              │              ╰─ profile.scores.length: 3
                  │              ╰─ profile.name: "alexander"
                  ╰─ profile.name.length: 9
-
+                
                 00 01 2c 00 00 00 07 01 00 00 00 01 00 00 00 02
                 ───────╯ ╰────┬────╯ ╰╮ ╰────┬────╯ ╰────┬────╯
                               │       │      │           ╰─ profile.home.y: 2
                               │       │      ╰─ profile.home.x: 1
                               │       ╰─ profile.home.present: true
                               ╰─ profile.scores[2]: 7
-
+                
                 00
                 ╰╮
                  ╰─ profile.flags.length: 0

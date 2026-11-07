@@ -23,7 +23,7 @@ public enum Sizes {
             return 0;
         }
 
-        return  random.nextInt(1, MAX_COLLECTION_SIZE + 1);
+        return random.nextInt(1, MAX_COLLECTION_SIZE + 1);
     }
 
 }
