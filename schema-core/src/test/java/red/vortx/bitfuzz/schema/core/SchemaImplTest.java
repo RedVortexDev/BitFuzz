@@ -13,6 +13,7 @@ import red.vortx.bitfuzz.buffer.netty.NettyByteWriter;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaException;
 import red.vortx.bitfuzz.schema.api.field.Field;
+import red.vortx.bitfuzz.schema.api.field.type.Primitives;
 import red.vortx.bitfuzz.schema.api.field.type.SimpleType;
 
 import java.util.ArrayList;

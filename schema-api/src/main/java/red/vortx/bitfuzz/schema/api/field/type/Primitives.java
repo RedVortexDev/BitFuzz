@@ -2,12 +2,10 @@
 // SPDX-FileCopyrightText: 2026 RedVortexDev
 // SPDX-License-Identifier: Apache-2.0
 
-package red.vortx.bitfuzz.schema.core;
+package red.vortx.bitfuzz.schema.api.field.type;
 
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
-import red.vortx.bitfuzz.schema.api.field.type.SimpleType;
-import red.vortx.bitfuzz.schema.api.field.type.Type;
 
 /// Primitive types with a fixed byte order.
 ///

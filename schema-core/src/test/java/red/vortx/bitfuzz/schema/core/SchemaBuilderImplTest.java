@@ -11,6 +11,7 @@ import red.vortx.bitfuzz.schema.api.SchemaBuilder;
 import red.vortx.bitfuzz.schema.api.SchemaDefaults;
 import red.vortx.bitfuzz.schema.api.field.Field;
 import red.vortx.bitfuzz.schema.api.field.type.EndiannessTypeSpec;
+import red.vortx.bitfuzz.schema.api.field.type.Primitives;
 import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
 import red.vortx.bitfuzz.schema.api.key.SchemaKey;
 import red.vortx.bitfuzz.schema.api.key.SchemaKeys;

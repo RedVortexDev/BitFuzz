@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 /// Each component's type is picked in this order:
 /// 1. A [WireType] annotation on it
 /// 2. The schema's [record type][RecordTypes] for its Java type
-/// 3. The built-in type for numbers, `boolean`, `String`, `UUID`, records, `List`, `Optional` and `Map`
+/// 3. The built-in types
 ///
 /// Building a schema with an unsupported record throws [IllegalArgumentException].
 public enum RecordMapper {

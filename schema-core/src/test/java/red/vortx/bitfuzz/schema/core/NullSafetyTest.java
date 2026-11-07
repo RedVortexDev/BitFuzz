@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import red.vortx.bitfuzz.schema.api.Endianness;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaDefaults;
+import red.vortx.bitfuzz.schema.api.field.type.Primitives;
 import red.vortx.bitfuzz.schema.api.key.SchemaKey;
 import red.vortx.bitfuzz.schema.api.key.SchemaKeys;
 

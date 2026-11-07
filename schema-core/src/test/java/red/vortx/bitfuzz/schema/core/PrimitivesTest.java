@@ -6,6 +6,7 @@ package red.vortx.bitfuzz.schema.core;
 
 import org.junit.jupiter.api.Test;
 import red.vortx.bitfuzz.schema.api.SchemaDefaults;
+import red.vortx.bitfuzz.schema.api.field.type.Primitives;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;

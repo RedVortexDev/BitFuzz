@@ -6,10 +6,10 @@ package red.vortx.bitfuzz.schema.std.type;
 
 import red.vortx.bitfuzz.schema.api.SchemaException;
 import red.vortx.bitfuzz.schema.api.field.type.EndiannessTypeSpec;
+import red.vortx.bitfuzz.schema.api.field.type.Primitives;
 import red.vortx.bitfuzz.schema.api.field.type.SimpleType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
-import red.vortx.bitfuzz.schema.core.Primitives;
 import red.vortx.bitfuzz.schema.std.key.SchemaStandardKeys;
 import red.vortx.bitfuzz.schema.std.type.record.RecordMapper;
 

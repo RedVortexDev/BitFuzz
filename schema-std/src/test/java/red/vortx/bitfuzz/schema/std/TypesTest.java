@@ -8,10 +8,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import red.vortx.bitfuzz.schema.api.Endianness;
 import red.vortx.bitfuzz.schema.api.Schema;
+import red.vortx.bitfuzz.schema.api.field.type.Primitives;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
 import red.vortx.bitfuzz.schema.api.key.SchemaKeys;
-import red.vortx.bitfuzz.schema.core.Primitives;
 import red.vortx.bitfuzz.schema.core.SchemaBuilderImpl;
 import red.vortx.bitfuzz.schema.std.type.Types;
 
