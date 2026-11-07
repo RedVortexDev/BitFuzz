@@ -55,14 +55,10 @@ Schema player = SchemaBuilder.create()
         .field(Types.BOOL, "online")
         .build();
 
-player.
-
-write(new NettyByteWriter(buffer),List.
-
-of(
+player.write(new NettyByteWriter(buffer), List.of(
         "steve",
-                12,
-                true
+        12,
+        true
 ));
 
 List<Object> read = player.read(new NettyByteReader(buffer));
@@ -92,9 +88,7 @@ Schema schema = SchemaBuilder.create()
         .field(Types.record(Player.class), "player")
         .build();
 
-schema.
-
-write(writer, List.of(new Player("steve", 300,true,List.of("op"))));
+schema.write(writer, List.of(new Player("steve", 300, true, List.of("op"))));
 ```
 
 This writes the following bytes:
@@ -172,9 +166,7 @@ Schema schema = SchemaBuilder.create()
         .field(Types.INT, "score")
         .build();
 
-schema.
-
-write(writer, List.of(new Player("steve", 300), 12));
+schema.write(writer, List.of(new Player("steve", 300), 12));
 ```
 
 Which would serialize as:
@@ -202,11 +194,7 @@ Schema header = SchemaBuilder.create()
         .field(Primitives.SHORT_LE, "flags")
         .build();
 
-header.
-
-write(new NIOByteWriter(buffer),List.
-
-of(7,(short) 1));
+header.write(new NIOByteWriter(buffer), List.of(7, (short) 1));
 ```
 
 This writes the following bytes:
@@ -272,9 +260,7 @@ written, and reading must use up exactly the bytes that were written.
 
 ```java
 FuzzResult result = Fuzz.roundTrip(schema, 10_000, 42L);
-System.out.
-
-println(result.report());
+System.out.println(result.report());
 ```
 
 Output:
@@ -311,11 +297,7 @@ Schema schema = SchemaBuilder.create()
         .field(Primitives.INT, "level")
         .build();
 
-System.out.
-
-println(Fuzz.mutate(schema, 10_000,42L).
-
-report());
+System.out.println(Fuzz.mutate(schema, 10_000, 42L).report());
 ```
 
 Output:
@@ -387,7 +369,7 @@ README was made.
 It's handy for checking a type writes what you expect and for reading a shrunk failing input.
 
 ```java
-System.out.println(WireDump.explain(schema, List.of("steve", 12,true)));
+System.out.println(WireDump.explain(schema, List.of("steve", 12, true)));
 ```
 
 ## Supported Types
