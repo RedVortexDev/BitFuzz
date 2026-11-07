@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public class SchemaBuilderImpl implements SchemaBuilder {
 
-    private final SchemaDefaults.Mutable defaults = SchemaDefaultsImpl.initial();
+    private final SchemaDefaults.Mutable defaults = SchemaDefaultsImpl.empty();
     private final List<BuilderField> fields = new ArrayList<>();
 
     @Override

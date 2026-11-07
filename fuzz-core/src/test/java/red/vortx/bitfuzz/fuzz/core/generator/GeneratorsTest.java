@@ -13,7 +13,7 @@ import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.field.type.SimpleType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
-import red.vortx.bitfuzz.schema.std.Types;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,10 +21,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static red.vortx.bitfuzz.fuzz.core.generator.Samples.random;
-import static red.vortx.bitfuzz.fuzz.core.generator.Samples.resolve;
-import static red.vortx.bitfuzz.fuzz.core.generator.Samples.sample;
-import static red.vortx.bitfuzz.fuzz.core.generator.Samples.single;
+import static red.vortx.bitfuzz.fuzz.core.generator.Samples.*;
 
 class GeneratorsTest {
 

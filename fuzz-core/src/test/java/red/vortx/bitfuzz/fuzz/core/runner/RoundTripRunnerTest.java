@@ -7,7 +7,7 @@ import red.vortx.bitfuzz.fuzz.api.FuzzResult;
 import red.vortx.bitfuzz.fuzz.core.generator.Generators;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaBuilder;
-import red.vortx.bitfuzz.schema.std.Types;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import java.util.List;
 

@@ -10,7 +10,12 @@ import red.vortx.bitfuzz.schema.api.SchemaBuilder;
 import red.vortx.bitfuzz.schema.api.SchemaException;
 import red.vortx.bitfuzz.schema.api.annotation.WireType;
 import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
-import red.vortx.bitfuzz.schema.std.Types;
+import red.vortx.bitfuzz.schema.api.key.SchemaKeys;
+import red.vortx.bitfuzz.schema.std.key.SchemaStandardKeys;
+import red.vortx.bitfuzz.schema.std.type.Types;
+import red.vortx.bitfuzz.schema.std.type.record.RecordTypes;
+import red.vortx.bitfuzz.schema.std.type.record.VarInt;
+import red.vortx.bitfuzz.schema.std.type.record.VarLong;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -87,7 +92,7 @@ class RecordTypeTest {
 
     private static Schema varIntSchemaOf(final Class<? extends Record> recordClass) {
         return SchemaBuilder.create()
-                .defaults(defaults -> defaults.recordType(Integer.class, Types.VAR_INT))
+                .defaults(defaults -> defaults.update(SchemaStandardKeys.RECORD_TYPES, types -> types.with(Integer.class, Types.VAR_INT)))
                 .field(Types.record(recordClass), "value")
                 .build();
     }
@@ -123,7 +128,7 @@ class RecordTypeTest {
     @Test
     void followsSchemaEndianness() {
         final Schema schema = SchemaBuilder.create()
-                .defaults(defaults -> defaults.endianness(Endianness.LITTLE_ENDIAN))
+                .defaults(defaults -> defaults.set(SchemaKeys.ENDIANNESS, Endianness.LITTLE_ENDIAN))
                 .field(Types.record(Point.class), "point")
                 .build();
 
@@ -141,13 +146,55 @@ class RecordTypeTest {
 
     @Test
     void replacedTypesApplyInsideNestedRecordsAndContainers() {
-        final Schema schema = varIntSchemaOf(Leaderboard.class);
+        final Schema schema = SchemaBuilder.create()
+                .defaults(defaults -> defaults
+                        .update(SchemaStandardKeys.RECORD_TYPES, types -> types.with(Integer.class, Types.VAR_INT))
+                        .set(SchemaStandardKeys.LENGTH_TYPE, Types.INT)
+                )
+                .field(Types.record(Leaderboard.class), "value")
+                .build();
         final Leaderboard leaderboard = new Leaderboard(new Point(1, 2), List.of(300));
 
         assertThat(written(out -> schema.write(out, List.of(leaderboard))))
                 .as("list length keeps the schema length type")
                 .containsExactly(1, 2, 0, 0, 0, 1, 0xAC, 0x02);
         assertThat(roundTrip(schema, leaderboard)).isEqualTo(leaderboard);
+    }
+
+    @Test
+    void recordTypesTreatPrimitivesAndWrappersAsTheSameType() {
+        final Schema schema = SchemaBuilder.create()
+                .defaults(defaults -> defaults.update(SchemaStandardKeys.RECORD_TYPES, types -> types.with(int.class, Types.VAR_INT)))
+                .field(Types.record(Point.class), "point")
+                .build();
+
+        assertThat(written(out -> schema.write(out, List.of(new Point(1, 2))))).containsExactly(1, 2);
+    }
+
+    @Test
+    void recordTypesAddUpAcrossDefaultsCalls() {
+        final Schema schema = SchemaBuilder.create()
+                .defaults(defaults -> defaults.update(SchemaStandardKeys.RECORD_TYPES, types -> types.with(Integer.class, Types.VAR_INT)))
+                .defaults(defaults -> defaults.update(SchemaStandardKeys.RECORD_TYPES, types -> types.with(Long.class, Types.VAR_LONG)))
+                .field(Types.record(Point.class), "point")
+                .build();
+
+        assertThat(written(out -> schema.write(out, List.of(new Point(1, 2))))).as("the Long type kept the Integer one").containsExactly(1, 2);
+    }
+
+    @Test
+    void laterRecordTypeForAWrapperReplacesThePrimitiveOne() {
+        final RecordTypes types = RecordTypes.empty().with(int.class, Types.VAR_INT).with(Integer.class, Types.INT);
+
+        assertThat(types.types()).hasSize(1);
+        assertThat(types.get(int.class)).containsSame(Types.INT);
+    }
+
+    @Test
+    void recordTypesForAPrimitiveAndItsWrapperInOneMapAreRejected() {
+        assertThatThrownBy(() -> new RecordTypes(Map.of(int.class, Types.VAR_INT, Integer.class, Types.INT)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Integer");
     }
 
     @Test

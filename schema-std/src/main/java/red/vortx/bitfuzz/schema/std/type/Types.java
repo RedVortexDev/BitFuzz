@@ -1,4 +1,4 @@
-package red.vortx.bitfuzz.schema.std;
+package red.vortx.bitfuzz.schema.std.type;
 
 import red.vortx.bitfuzz.schema.api.SchemaException;
 import red.vortx.bitfuzz.schema.api.field.type.EndiannessTypeSpec;
@@ -6,13 +6,10 @@ import red.vortx.bitfuzz.schema.api.field.type.SimpleType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
 import red.vortx.bitfuzz.schema.core.Primitives;
-import red.vortx.bitfuzz.schema.std.record.RecordMapper;
+import red.vortx.bitfuzz.schema.std.key.SchemaStandardKeys;
+import red.vortx.bitfuzz.schema.std.type.record.RecordMapper;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /// Standard types that can be used in a schema. Includes endianness aware types and extended types.
 public enum Types {
@@ -67,24 +64,6 @@ public enum Types {
             reader -> new UUID(reader.readLong(), reader.readLong())
     );
 
-    /// A UTF-8 string. Prefixed with its length in bytes.
-    ///
-    /// Strict encoding and decoding, unpaired surrogates when writing and malformed UTF-8 when reading throw
-    /// [SchemaException].
-    public static final TypeSpec<String> STRING = defaults -> new StringType(defaults.lengthType());
-
-    /// A UTF-8 string. Prefixed with its length in bytes.
-    ///
-    /// Strict encoding and decoding, unpaired surrogates when writing and malformed UTF-8 when reading throw
-    /// [SchemaException].
-    ///
-    /// @param lengthType the type of the length prefix
-    public static TypeSpec<String> string(final TypeSpec<Integer> lengthType) {
-        Objects.requireNonNull(lengthType, "lengthType");
-
-        return defaults -> new StringType(lengthType.resolve(defaults));
-    }
-
     /// A fixed-length UTF-8 string. No length prefix and not padded.
     ///
     /// @param byteLength the number of bytes
@@ -107,6 +86,28 @@ public enum Types {
     /// otherwise valid encodings are accepted.
     public static final Type<Long> VAR_LONG = new VarLongType();
 
+    /// The schema's [length type][SchemaStandardKeys#LENGTH_TYPE], a [varint][#VAR_INT] by default.
+    public static final TypeSpec<Integer> LENGTH = defaults ->
+            defaults.get(SchemaStandardKeys.LENGTH_TYPE).resolve(defaults);
+
+    /// A UTF-8 string. Prefixed with its length in bytes.
+    ///
+    /// Strict encoding and decoding, unpaired surrogates when writing and malformed UTF-8 when reading throw
+    /// [SchemaException].
+    public static final TypeSpec<String> STRING = defaults -> new StringType(LENGTH.resolve(defaults));
+
+    /// A UTF-8 string. Prefixed with its length in bytes.
+    ///
+    /// Strict encoding and decoding, unpaired surrogates when writing and malformed UTF-8 when reading throw
+    /// [SchemaException].
+    ///
+    /// @param lengthType the type of the length prefix
+    public static TypeSpec<String> string(final TypeSpec<Integer> lengthType) {
+        Objects.requireNonNull(lengthType, "lengthType");
+
+        return defaults -> new StringType(lengthType.resolve(defaults));
+    }
+
     // Collections
 
     /// A list. An element count followed by each element in iteration order. Reading returns a list that keeps the
@@ -115,12 +116,7 @@ public enum Types {
     /// @param elementType the type of the elements
     /// @param <T>         the type of the elements
     public static <T> TypeSpec<List<T>> list(final TypeSpec<T> elementType) {
-        Objects.requireNonNull(elementType, "elementType");
-
-        return defaults -> new ListType<>(
-                elementType.resolve(defaults),
-                defaults.lengthType()
-        );
+        return list(elementType, LENGTH);
     }
 
     /// A list. An element count followed by each element in iteration order. Reading returns a list that keeps the
@@ -147,14 +143,7 @@ public enum Types {
     /// @param <K>        the type of the keys
     /// @param <V>        the type of the values
     public static <K, V> TypeSpec<Map<K, V>> map(final TypeSpec<K> keyType, final TypeSpec<V> valueType) {
-        Objects.requireNonNull(keyType, "keyType");
-        Objects.requireNonNull(valueType, "valueType");
-
-        return defaults -> new MapType<>(
-                keyType.resolve(defaults),
-                valueType.resolve(defaults),
-                defaults.lengthType()
-        );
+        return map(keyType, valueType, LENGTH);
     }
 
     /// A map. An entry count followed by each key and value in iteration order. Reading returns a map that keeps the

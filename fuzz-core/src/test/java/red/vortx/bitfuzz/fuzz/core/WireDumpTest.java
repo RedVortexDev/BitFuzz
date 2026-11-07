@@ -5,7 +5,7 @@ import red.vortx.bitfuzz.fuzz.core.generator.Generators;
 import red.vortx.bitfuzz.fuzz.core.generator.impl.SchemaGenerator;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaBuilder;
-import red.vortx.bitfuzz.schema.std.Types;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,14 +26,12 @@ class WireDumpTest {
     }
 
     private static final Schema PLAYER = SchemaBuilder.create()
-            .defaults(defaults -> defaults.lengthType(Types.VAR_INT))
             .field(Types.STRING, "name")
             .field(Types.INT, "level")
             .field(Types.BOOL, "online")
             .build();
 
     private static final Schema EVERYTHING = SchemaBuilder.create()
-            .defaults(defaults -> defaults.lengthType(Types.VAR_INT))
             .field(Types.record(Profile.class), "profile")
             .field(Types.map(Types.STRING, Types.list(Types.optional(Types.VAR_LONG))), "nested")
             .field(Types.UUID, "id")
@@ -54,7 +52,6 @@ class WireDumpTest {
     @Test
     void splitsLongEncodingsIntoRows() {
         final Schema schema = SchemaBuilder.create()
-                .defaults(defaults -> defaults.lengthType(Types.VAR_INT))
                 .field(Types.record(Profile.class), "profile")
                 .build();
         final Profile profile = new Profile("alexander", List.of(1, 300, 7), Optional.of(new Point(1, 2)), Map.of());
@@ -84,7 +81,6 @@ class WireDumpTest {
     @Test
     void explainsNestedValuesDownToTheirLeaves() {
         final Schema schema = SchemaBuilder.create()
-                .defaults(defaults -> defaults.lengthType(Types.VAR_INT))
                 .field(Types.record(Profile.class), "profile")
                 .build();
         final Profile profile = new Profile("al", List.of(1, 300), Optional.of(new Point(1, 2)), Map.of("admin", true));

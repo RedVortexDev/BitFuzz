@@ -3,81 +3,55 @@ package red.vortx.bitfuzz.schema.core;
 import org.junit.jupiter.api.Test;
 import red.vortx.bitfuzz.schema.api.Endianness;
 import red.vortx.bitfuzz.schema.api.SchemaDefaults;
-import red.vortx.bitfuzz.schema.api.field.type.EndiannessTypeSpec;
+import red.vortx.bitfuzz.schema.api.key.SchemaKey;
+import red.vortx.bitfuzz.schema.api.key.SchemaKeys;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SchemaDefaultsImplTest {
 
+    private static final SchemaKey<String> NAME = new SchemaKey<>("name", "fallback");
+
+    @Test
+    void unsetKeysUseTheirFallback() {
+        assertThat(new SchemaDefaultsImpl(Map.of()).get(NAME)).isEqualTo("fallback");
+    }
+
     @Test
     void toMutableCopiesValues() {
-        final SchemaDefaults defaults = new SchemaDefaultsImpl(Endianness.LITTLE_ENDIAN, Primitives.INT_LE);
-        final SchemaDefaults.Mutable mutable = defaults.toMutable();
+        final SchemaDefaults defaults = new SchemaDefaultsImpl(Map.of(NAME, "set"));
 
-        assertThat(mutable.endianness()).isEqualTo(Endianness.LITTLE_ENDIAN);
-        assertThat(mutable.lengthType()).isSameAs(Primitives.INT_LE);
+        assertThat(defaults.toMutable().get(NAME)).isEqualTo("set");
     }
 
     @Test
     void mutatingCopyDoesNotChangeOriginal() {
-        final SchemaDefaults defaults = new SchemaDefaultsImpl(Endianness.BIG_ENDIAN, Primitives.INT);
+        final SchemaDefaults defaults = new SchemaDefaultsImpl(Map.of(NAME, "set"));
 
-        defaults.toMutable().endianness(Endianness.LITTLE_ENDIAN).lengthType(Primitives.INT_LE);
+        defaults.toMutable().set(NAME, "changed").set(SchemaKeys.ENDIANNESS, Endianness.LITTLE_ENDIAN);
 
-        assertThat(defaults.endianness()).isEqualTo(Endianness.BIG_ENDIAN);
-        assertThat(defaults.lengthType()).isSameAs(Primitives.INT);
+        assertThat(defaults.get(NAME)).isEqualTo("set");
+        assertThat(defaults.get(SchemaKeys.ENDIANNESS)).isEqualTo(Endianness.BIG_ENDIAN);
+    }
+
+    @Test
+    void updateStartsFromTheFallback() {
+        final SchemaDefaults.Mutable mutable = SchemaDefaultsImpl.empty().update(NAME, name -> name + " updated");
+
+        assertThat(mutable.update(NAME, name -> name + " twice").get(NAME)).isEqualTo("fallback updated twice");
     }
 
     @Test
     void buildSnapshotsCurrentValues() {
-        final SchemaDefaults.Mutable mutable = new SchemaDefaultsImpl(Endianness.BIG_ENDIAN, Primitives.INT).toMutable();
+        final SchemaDefaults.Mutable mutable = SchemaDefaultsImpl.empty().set(NAME, "first");
         final SchemaDefaults built = mutable.build();
 
-        mutable.endianness(Endianness.LITTLE_ENDIAN);
+        mutable.set(NAME, "second");
 
-        assertThat(built.endianness()).isEqualTo(Endianness.BIG_ENDIAN);
-    }
-
-    @Test
-    void lengthSpecResolvesWithCurrentEndianness() {
-        final SchemaDefaults.Mutable mutable = new SchemaDefaultsImpl(Endianness.BIG_ENDIAN, Primitives.INT).toMutable()
-                .lengthType(new EndiannessTypeSpec<>(Primitives.INT, Primitives.INT_LE));
-
-        assertThat(mutable.lengthType()).isSameAs(Primitives.INT);
-
-        mutable.endianness(Endianness.LITTLE_ENDIAN);
-
-        assertThat(mutable.lengthType()).isSameAs(Primitives.INT_LE);
-        assertThat(mutable.build().lengthType()).isSameAs(Primitives.INT_LE);
-    }
-
-    @Test
-    void recordTypesAreEmptyByDefault() {
-        assertThat(SchemaDefaultsImpl.initial().recordType(Integer.class)).isEmpty();
-        assertThat(new SchemaDefaultsImpl(Endianness.BIG_ENDIAN, Primitives.INT).recordType(Integer.class)).isEmpty();
-    }
-
-    @Test
-    void recordTypeTreatsPrimitivesAndWrappersAsTheSameType() {
-        final SchemaDefaults fromPrimitive = SchemaDefaultsImpl.initial().recordType(int.class, Primitives.INT_LE).build();
-        final SchemaDefaults fromWrapper = SchemaDefaultsImpl.initial().recordType(Integer.class, Primitives.INT_LE).build();
-
-        assertThat(fromPrimitive.recordType(Integer.class)).containsSame(Primitives.INT_LE);
-        assertThat(fromWrapper.recordType(int.class)).containsSame(Primitives.INT_LE);
-    }
-
-    @Test
-    void recordTypesAreCopiedNotShared() {
-        final SchemaDefaults.Mutable mutable = SchemaDefaultsImpl.initial().recordType(Integer.class, Primitives.INT_LE);
-        final SchemaDefaults built = mutable.build();
-        final SchemaDefaults.Mutable copy = built.toMutable();
-
-        mutable.recordType(Long.class, Primitives.LONG_LE);
-        copy.recordType(Integer.class, Primitives.INT);
-
-        assertThat(built.recordType(Long.class)).isEmpty();
-        assertThat(built.recordType(Integer.class)).containsSame(Primitives.INT_LE);
-        assertThat(mutable.recordType(Integer.class)).containsSame(Primitives.INT_LE);
+        assertThat(built.get(NAME)).isEqualTo("first");
+        assertThat(mutable.get(NAME)).isEqualTo("second");
     }
 
     @Test

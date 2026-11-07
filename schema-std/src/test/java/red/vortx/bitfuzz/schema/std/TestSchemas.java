@@ -6,6 +6,7 @@ import red.vortx.bitfuzz.schema.api.SchemaBuilder;
 import red.vortx.bitfuzz.schema.api.SchemaException;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
+import red.vortx.bitfuzz.schema.api.key.SchemaKeys;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ enum TestSchemas {
 
     static Schema single(final TypeSpec<?> type, final Endianness endianness) {
         return SchemaBuilder.create()
-                .defaults(defaults -> defaults.endianness(endianness))
+                .defaults(defaults -> defaults.set(SchemaKeys.ENDIANNESS, endianness))
                 .field(type, "value")
                 .build();
     }

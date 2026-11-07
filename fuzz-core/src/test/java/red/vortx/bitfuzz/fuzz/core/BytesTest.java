@@ -3,7 +3,7 @@ package red.vortx.bitfuzz.fuzz.core;
 import org.junit.jupiter.api.Test;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaBuilder;
-import red.vortx.bitfuzz.schema.std.Types;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ class BytesTest {
 
     @Test
     void encodeIsExactlySized() {
-        assertThat(Bytes.encode(SCHEMA, List.of(300, "hi"))).hasSize(2 + 4 + 2);
+        assertThat(Bytes.encode(SCHEMA, List.of(300, "hi"))).hasSize(2 + 1 + 2);
     }
 
     @Test

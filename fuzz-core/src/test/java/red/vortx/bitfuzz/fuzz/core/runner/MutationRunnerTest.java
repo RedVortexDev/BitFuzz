@@ -11,7 +11,7 @@ import red.vortx.bitfuzz.fuzz.core.shrink.ByteShrinker;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaBuilder;
 import red.vortx.bitfuzz.schema.api.SchemaException;
-import red.vortx.bitfuzz.schema.std.Types;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import java.util.List;
 

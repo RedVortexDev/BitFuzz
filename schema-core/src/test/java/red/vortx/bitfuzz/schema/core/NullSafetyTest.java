@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import red.vortx.bitfuzz.schema.api.Endianness;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaDefaults;
+import red.vortx.bitfuzz.schema.api.key.SchemaKey;
+import red.vortx.bitfuzz.schema.api.key.SchemaKeys;
 
 import java.util.List;
 
@@ -32,23 +34,17 @@ class NullSafetyTest {
     @Test
     void defaultsRejectNullSettings() {
         assertThatNullPointerException()
-                .isThrownBy(() -> new SchemaBuilderImpl().defaults(defaults -> defaults.endianness(null)))
-                .withMessage("endianness");
+                .isThrownBy(() -> new SchemaBuilderImpl().defaults(defaults -> defaults.set(null, Endianness.BIG_ENDIAN)))
+                .withMessage("key");
         assertThatNullPointerException()
-                .isThrownBy(() -> new SchemaBuilderImpl().defaults(defaults -> defaults.lengthType(null)))
-                .withMessage("lengthType");
+                .isThrownBy(() -> new SchemaBuilderImpl().defaults(defaults -> defaults.set(SchemaKeys.ENDIANNESS, null)))
+                .withMessage("value");
+        assertThatNullPointerException().isThrownBy(() -> SchemaDefaultsImpl.empty().get(null)).withMessage("key");
         assertThatNullPointerException()
-                .isThrownBy(() -> new SchemaBuilderImpl().defaults(defaults -> defaults.recordType(null, Primitives.INT)))
-                .withMessage("javaType");
-        assertThatNullPointerException()
-                .isThrownBy(() -> new SchemaBuilderImpl().defaults(defaults -> defaults.recordType(Integer.class, null)))
-                .withMessage("type");
-        assertThatNullPointerException()
-                .isThrownBy(() -> SchemaDefaultsImpl.initial().recordType(null))
-                .withMessage("javaType");
-        assertThatNullPointerException()
-                .isThrownBy(() -> new SchemaDefaultsImpl(null, Primitives.INT))
-                .withMessage("endianness");
+                .isThrownBy(() -> SchemaDefaultsImpl.empty().update(SchemaKeys.ENDIANNESS, null))
+                .withMessage("updater");
+        assertThatNullPointerException().isThrownBy(() -> new SchemaKey<>(null, 1)).withMessage("name");
+        assertThatNullPointerException().isThrownBy(() -> new SchemaKey<>("key", null)).withMessage("fallback");
     }
 
     @Test
@@ -65,13 +61,13 @@ class NullSafetyTest {
 
     @Test
     void toMutableOnMutableReturnsIndependentCopy() {
-        final SchemaDefaults.Mutable original = SchemaDefaultsImpl.initial();
+        final SchemaDefaults.Mutable original = SchemaDefaultsImpl.empty();
         final SchemaDefaults.Mutable copy = original.toMutable();
 
-        copy.endianness(Endianness.LITTLE_ENDIAN);
+        copy.set(SchemaKeys.ENDIANNESS, Endianness.LITTLE_ENDIAN);
 
         assertThat(copy).isNotSameAs(original);
-        assertThat(original.endianness()).isEqualTo(Endianness.BIG_ENDIAN);
+        assertThat(original.get(SchemaKeys.ENDIANNESS)).isEqualTo(Endianness.BIG_ENDIAN);
     }
 
 }

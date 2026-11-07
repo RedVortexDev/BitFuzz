@@ -5,14 +5,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.schema.api.Endianness;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.assertRejects;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.assertRoundTrip;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.assertSizeOfMatches;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.bytes;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.decode;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.encode;
+import static red.vortx.bitfuzz.schema.std.TestSchemas.*;
 
 class VarIntTypeTest {
 

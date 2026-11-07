@@ -1,110 +1,75 @@
 package red.vortx.bitfuzz.schema.core;
 
-import red.vortx.bitfuzz.schema.api.Endianness;
 import red.vortx.bitfuzz.schema.api.SchemaDefaults;
-import red.vortx.bitfuzz.schema.api.field.type.EndiannessTypeSpec;
-import red.vortx.bitfuzz.schema.api.field.type.Type;
-import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
+import red.vortx.bitfuzz.schema.api.key.SchemaKey;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
-public record SchemaDefaultsImpl(Endianness endianness, Type<Integer> lengthType,
-                                 Map<Class<?>, TypeSpec<?>> recordTypes) implements SchemaDefaults {
+public record SchemaDefaultsImpl(Map<SchemaKey<?>, Object> values) implements SchemaDefaults {
 
     public SchemaDefaultsImpl {
-        Objects.requireNonNull(endianness, "endianness");
-        Objects.requireNonNull(lengthType, "lengthType");
-        recordTypes = Map.copyOf(recordTypes);
-    }
-
-    public SchemaDefaultsImpl(final Endianness endianness, final Type<Integer> lengthType) {
-        this(endianness, lengthType, Map.of());
+        values = Map.copyOf(values);
     }
 
     @Override
-    public <T> Optional<TypeSpec<T>> recordType(final Class<T> javaType) {
-        return findRecordType(this.recordTypes, javaType);
+    public <T> T get(final SchemaKey<T> key) {
+        return getValue(this.values, key);
     }
 
+    @Override
     public Mutable toMutable() {
-        return new MutableImpl(this.endianness, this.lengthType, this.recordTypes);
+        return new MutableImpl(this.values);
     }
 
-    /// {@return the defaults every new schema builder starts from: big-endian, with an endianness-aware int length}
-    static SchemaDefaults.Mutable initial() {
-        return new MutableImpl(
-                Endianness.BIG_ENDIAN,
-                new EndiannessTypeSpec<>(Primitives.INT, Primitives.INT_LE),
-                Map.of()
-        );
+    /// {@return a new empty mutable schema defaults}
+    static SchemaDefaults.Mutable empty() {
+        return new MutableImpl(Map.of());
     }
 
-    private static <T> Optional<TypeSpec<T>> findRecordType(final Map<Class<?>, TypeSpec<?>> recordTypes, final Class<T> javaType) {
-        Objects.requireNonNull(javaType, "javaType");
+    private static <T> T getValue(final Map<SchemaKey<?>, Object> values, final SchemaKey<T> key) {
+        Objects.requireNonNull(key, "key");
+
+        final Object value = values.get(key);
+        if (value == null) {
+            return key.fallback();
+        }
 
         //noinspection unchecked
-        return Optional.ofNullable((TypeSpec<T>) recordTypes.get(Boxer.box(javaType)));
+        return (T) value;
     }
 
     private static class MutableImpl implements SchemaDefaults.Mutable {
 
-        private Endianness endianness;
-        private TypeSpec<Integer> lengthType;
-        private final Map<Class<?>, TypeSpec<?>> recordTypes;
+        private final Map<SchemaKey<?>, Object> values;
 
-        public MutableImpl(final Endianness endianness, final TypeSpec<Integer> lengthType, final Map<Class<?>, TypeSpec<?>> recordTypes) {
-            this.endianness = Objects.requireNonNull(endianness, "endianness");
-            this.lengthType = Objects.requireNonNull(lengthType, "lengthType");
-            this.recordTypes = new HashMap<>(recordTypes);
+        public MutableImpl(final Map<SchemaKey<?>, Object> values) {
+            this.values = new HashMap<>(values);
         }
 
         @Override
-        public Endianness endianness() {
-            return this.endianness;
-        }
-
-        @Override
-        public Type<Integer> lengthType() {
-            return this.lengthType.resolve(this);
-        }
-
-        @Override
-        public <T> Optional<TypeSpec<T>> recordType(final Class<T> javaType) {
-            return findRecordType(this.recordTypes, javaType);
+        public <T> T get(final SchemaKey<T> key) {
+            return getValue(this.values, key);
         }
 
         @Override
         public Mutable toMutable() {
-            return new MutableImpl(this.endianness, this.lengthType, this.recordTypes);
+            return new MutableImpl(this.values);
         }
 
         @Override
-        public Mutable endianness(final Endianness endianness) {
-            this.endianness = Objects.requireNonNull(endianness, "endianness");
-            return this;
-        }
+        public <T> Mutable set(final SchemaKey<T> key, final T value) {
+            Objects.requireNonNull(key, "key");
+            Objects.requireNonNull(value, "value");
 
-        @Override
-        public Mutable lengthType(final TypeSpec<Integer> lengthType) {
-            this.lengthType = Objects.requireNonNull(lengthType, "lengthType");
-            return this;
-        }
-
-        @Override
-        public <T> Mutable recordType(final Class<T> javaType, final TypeSpec<T> type) {
-            Objects.requireNonNull(javaType, "javaType");
-            Objects.requireNonNull(type, "type");
-
-            this.recordTypes.put(Boxer.box(javaType), type);
+            this.values.put(key, value);
             return this;
         }
 
         @Override
         public SchemaDefaults build() {
-            return new SchemaDefaultsImpl(this.endianness, this.lengthType.resolve(this), this.recordTypes);
+            return new SchemaDefaultsImpl(this.values);
         }
 
     }

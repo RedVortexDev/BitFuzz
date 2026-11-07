@@ -6,8 +6,10 @@ import red.vortx.bitfuzz.schema.api.Endianness;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
+import red.vortx.bitfuzz.schema.api.key.SchemaKeys;
 import red.vortx.bitfuzz.schema.core.Primitives;
 import red.vortx.bitfuzz.schema.core.SchemaBuilderImpl;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,7 +17,7 @@ class TypesTest {
 
     private static Type<?> resolve(final TypeSpec<?> spec, final Endianness endianness) {
         final Schema schema = new SchemaBuilderImpl()
-                .defaults(defaults -> defaults.endianness(endianness))
+                .defaults(defaults -> defaults.set(SchemaKeys.ENDIANNESS, endianness))
                 .field(spec, "x")
                 .build();
         return schema.fields().getFirst().type();

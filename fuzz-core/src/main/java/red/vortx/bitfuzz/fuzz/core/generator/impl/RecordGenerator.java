@@ -3,7 +3,7 @@ package red.vortx.bitfuzz.fuzz.core.generator.impl;
 import red.vortx.bitfuzz.fuzz.api.Generator;
 import red.vortx.bitfuzz.fuzz.api.GeneratorLookup;
 import red.vortx.bitfuzz.schema.api.SchemaException;
-import red.vortx.bitfuzz.schema.std.record.RecordType;
+import red.vortx.bitfuzz.schema.std.type.record.RecordType;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,6 +3,7 @@ package red.vortx.bitfuzz.schema.std;
 import org.junit.jupiter.api.Test;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaBuilder;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import java.util.List;
 

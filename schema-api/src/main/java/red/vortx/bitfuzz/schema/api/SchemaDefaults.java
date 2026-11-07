@@ -1,27 +1,21 @@
 package red.vortx.bitfuzz.schema.api;
 
-import red.vortx.bitfuzz.schema.api.field.type.Type;
-import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
+import red.vortx.bitfuzz.schema.api.key.SchemaKey;
+import red.vortx.bitfuzz.schema.api.key.SchemaKeys;
 
-import java.util.Optional;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 /// Default values used for building, serializing, and deserializing schemas.
 public interface SchemaDefaults {
 
-    /// {@return the schema's endianness}
-    Endianness endianness();
-
-    /// {@return the type used to represent the length of variable-length fields}
-    Type<Integer> lengthType();
-
-    /// Gets the type mapped records use for a Java type instead of the built-in one.
+    /// {@return the value set for the provided key}
     ///
-    /// Primitive classes and their wrappers are the same key.
+    /// Built in keys can be found in [SchemaKeys], standard library ones are in `SchemaStandardKeys`.
     ///
-    /// @param javaType the Java type class
-    /// @param <T>      the Java type
-    /// @return the type, or empty if none was set
-    <T> Optional<TypeSpec<T>> recordType(Class<T> javaType);
+    /// @param key the key to get the value of
+    /// @param <T> the type of the value
+    <T> T get(SchemaKey<T> key);
 
     /// {@return a mutable copy of these defaults}
     Mutable toMutable();
@@ -29,29 +23,29 @@ public interface SchemaDefaults {
     /// A mutable version of [SchemaDefaults].
     interface Mutable extends SchemaDefaults {
 
-        /// Sets the endianness of the schema.
+        /// Replaces the value of a key.
         ///
-        /// @param endianness the endianness to set
+        /// Built-in keys can be found in [SchemaKeys], standard library ones are in `SchemaStandardKeys`.
+        ///
+        /// @param key   the key to set
+        /// @param value the value to set
+        /// @param <T>   the type of the value
         /// @return this mutable schema defaults
-        Mutable endianness(Endianness endianness);
+        <T> Mutable set(SchemaKey<T> key, T value);
 
-        /// Sets the type used to represent the length of variable-length fields.
+        /// Replaces the value of a key based on its current value, or its fallback if none was set.
         ///
-        /// Resolved when the schema is built, so it follows the final [endianness][#endianness()].
+        /// Built-in keys can be found in [SchemaKeys], standard library ones are in `SchemaStandardKeys`.
         ///
-        /// @param lengthType the length type to set
+        /// @param key     the key to update
+        /// @param updater creates the new value from the current one
+        /// @param <T>     the type of the value
         /// @return this mutable schema defaults
-        Mutable lengthType(TypeSpec<Integer> lengthType);
+        default <T> Mutable update(final SchemaKey<T> key, final UnaryOperator<T> updater) {
+            Objects.requireNonNull(updater, "updater");
 
-        /// Sets the type mapped records use for a Java type instead of the built-in one.
-        ///
-        /// Primitive classes and their wrappers are the same key, so `int.class` also covers [Integer].
-        ///
-        /// @param javaType the Java type class
-        /// @param type     the type to use
-        /// @param <T>      the Java type
-        /// @return this mutable schema defaults
-        <T> Mutable recordType(Class<T> javaType, TypeSpec<T> type);
+            return this.set(key, updater.apply(this.get(key)));
+        }
 
         /// Builds [SchemaDefaults] from this mutable version.
         ///

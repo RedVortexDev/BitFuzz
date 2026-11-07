@@ -5,7 +5,11 @@ import red.vortx.bitfuzz.schema.api.Endianness;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaException;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
+import red.vortx.bitfuzz.schema.api.key.SchemaKeys;
 import red.vortx.bitfuzz.schema.core.SchemaBuilderImpl;
+import red.vortx.bitfuzz.schema.std.key.SchemaStandardKeys;
+import red.vortx.bitfuzz.schema.std.type.ListType;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import java.util.List;
 
@@ -20,7 +24,7 @@ class ListTypeTest {
 
     private static Schema listOfInts(final Endianness endianness) {
         return new SchemaBuilderImpl()
-                .defaults(defaults -> defaults.endianness(endianness).lengthType(Types.INT))
+                .defaults(defaults -> defaults.set(SchemaKeys.ENDIANNESS, endianness).set(SchemaStandardKeys.LENGTH_TYPE, Types.INT))
                 .field(Types.list(Types.INT), "list")
                 .build();
     }
@@ -92,15 +96,15 @@ class ListTypeTest {
     }
 
     @Test
-    void defaultLengthTypeFollowsSchemaEndianness() {
+    void lengthIsAVarIntByDefault() {
         final Schema schema = new SchemaBuilderImpl()
-                .defaults(defaults -> defaults.endianness(Endianness.LITTLE_ENDIAN))
+                .defaults(defaults -> defaults.set(SchemaKeys.ENDIANNESS, Endianness.LITTLE_ENDIAN))
                 .field(Types.list(Types.INT), "list")
                 .build();
 
         final byte[] bytes = written(out -> schema.write(out, List.of(List.of(1))));
 
-        assertThat(bytes).containsExactly(1, 0, 0, 0, 1, 0, 0, 0);
+        assertThat(bytes).containsExactly(1, 1, 0, 0, 0);
     }
 
     @Test
@@ -138,7 +142,7 @@ class ListTypeTest {
     @Test
     void listSpecResolvesElementType() {
         final Schema schema = new SchemaBuilderImpl()
-                .defaults(defaults -> defaults.endianness(Endianness.LITTLE_ENDIAN))
+                .defaults(defaults -> defaults.set(SchemaKeys.ENDIANNESS, Endianness.LITTLE_ENDIAN))
                 .field(Types.list(Types.SHORT), "list")
                 .build();
 

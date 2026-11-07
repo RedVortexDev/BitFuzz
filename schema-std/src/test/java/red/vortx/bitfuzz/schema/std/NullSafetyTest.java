@@ -1,6 +1,7 @@
 package red.vortx.bitfuzz.schema.std;
 
 import org.junit.jupiter.api.Test;
+import red.vortx.bitfuzz.schema.std.type.*;
 
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 

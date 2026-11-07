@@ -5,7 +5,7 @@ import red.vortx.bitfuzz.fuzz.api.GeneratorLookup;
 import red.vortx.bitfuzz.fuzz.api.GeneratorProvider;
 import red.vortx.bitfuzz.fuzz.core.generator.impl.RecordGenerator;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
-import red.vortx.bitfuzz.schema.std.record.RecordType;
+import red.vortx.bitfuzz.schema.std.type.record.RecordType;
 
 import java.util.Optional;
 

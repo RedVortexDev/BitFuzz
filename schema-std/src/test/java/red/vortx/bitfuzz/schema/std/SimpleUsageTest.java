@@ -10,6 +10,7 @@ import red.vortx.bitfuzz.fuzz.api.FuzzResult;
 import red.vortx.bitfuzz.fuzz.core.Fuzz;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaBuilder;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import java.util.List;
 
@@ -53,9 +54,6 @@ class SimpleUsageTest {
     }
 
     static final Schema PLAYER_RECORD = SchemaBuilder.create()
-            .defaults(defaults ->
-                defaults.lengthType(Types.VAR_INT)
-            )
             .field(Types.record(Player.class), "player")
             .build();
 

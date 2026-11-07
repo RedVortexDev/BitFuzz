@@ -17,6 +17,8 @@ import red.vortx.bitfuzz.schema.api.SchemaBuilder;
 import red.vortx.bitfuzz.schema.api.SchemaException;
 import red.vortx.bitfuzz.schema.api.field.type.SimpleType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
+import red.vortx.bitfuzz.schema.api.key.SchemaKeys;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -32,7 +34,6 @@ class UsageExampleTest {
 
     /// A chat message in a made-up network protocol.
     static final Schema CHAT_MESSAGE = SchemaBuilder.create()
-            .defaults(defaults -> defaults.lengthType(Types.VAR_INT))
             .field(Types.VAR_INT, "messageId")
             .field(Types.UUID, "sender")
             .field(Types.STRING, "text")
@@ -82,7 +83,7 @@ class UsageExampleTest {
         @Test
         void describeALittleEndianFileHeader() {
             final Schema header = SchemaBuilder.create()
-                    .defaults(defaults -> defaults.endianness(Endianness.LITTLE_ENDIAN))
+                    .defaults(defaults -> defaults.set(SchemaKeys.ENDIANNESS, Endianness.LITTLE_ENDIAN))
                     .field(Types.INT, "magic")
                     .field(Types.SHORT, "version")
                     .field(Types.LONG, "createdAt")

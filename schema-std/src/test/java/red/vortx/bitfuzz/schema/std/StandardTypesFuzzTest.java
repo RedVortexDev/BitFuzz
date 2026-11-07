@@ -8,6 +8,7 @@ import red.vortx.bitfuzz.fuzz.core.Fuzz;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaBuilder;
 import red.vortx.bitfuzz.schema.api.SchemaException;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import java.util.stream.Stream;
 

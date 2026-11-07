@@ -6,38 +6,33 @@ import org.junit.jupiter.params.provider.ValueSource;
 import red.vortx.bitfuzz.schema.api.Endianness;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaException;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static red.vortx.bitfuzz.schema.std.TestBuffers.written;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.assertRejects;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.assertRoundTrip;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.assertSizeOfMatches;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.bytes;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.decode;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.encode;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.single;
+import static red.vortx.bitfuzz.schema.std.TestSchemas.*;
 
 class StringTypeTest {
 
     @Test
     void encodesByteLengthThenUtf8() {
-        assertThat(encode(Types.STRING, "hi")).containsExactly(bytes(0, 0, 0, 2, 'h', 'i'));
+        assertThat(encode(Types.STRING, "hi")).containsExactly(bytes(2, 'h', 'i'));
     }
 
     @Test
     void emptyString() {
-        assertThat(encode(Types.STRING, "")).containsExactly(bytes(0, 0, 0, 0));
-        assertThat(decode(Types.STRING, bytes(0, 0, 0, 0))).isEqualTo("");
+        assertThat(encode(Types.STRING, "")).containsExactly(bytes(0));
+        assertThat(decode(Types.STRING, bytes(0))).isEqualTo("");
     }
 
     @Test
     void lengthCountsBytesNotCharacters() {
-        assertThat(encode(Types.STRING, "é")).as("1 char, 2 bytes").containsExactly(bytes(0, 0, 0, 2, 0xC3, 0xA9));
+        assertThat(encode(Types.STRING, "é")).as("1 char, 2 bytes").containsExactly(bytes(2, 0xC3, 0xA9));
         assertThat(encode(Types.STRING, "😀")).as("2 chars, 4 bytes")
-                .containsExactly(bytes(0, 0, 0, 4, 0xF0, 0x9F, 0x98, 0x80));
+                .containsExactly(bytes(4, 0xF0, 0x9F, 0x98, 0x80));
     }
 
     @ParameterizedTest
@@ -56,34 +51,34 @@ class StringTypeTest {
     }
 
     @Test
-    void lengthFollowsSchemaEndianness() {
-        assertThat(encode(Types.STRING, Endianness.LITTLE_ENDIAN, "hi")).containsExactly(bytes(2, 0, 0, 0, 'h', 'i'));
+    void intLengthFollowsSchemaEndianness() {
+        assertThat(encode(Types.string(Types.INT), Endianness.LITTLE_ENDIAN, "hi")).containsExactly(bytes(2, 0, 0, 0, 'h', 'i'));
     }
 
     @Test
     void customLengthType() {
-        assertThat(encode(Types.string(Types.VAR_INT), "hi")).containsExactly(bytes(2, 'h', 'i'));
-        assertThat(encode(Types.string(Types.VAR_INT), "")).containsExactly(bytes(0));
-        assertRoundTrip(Types.string(Types.VAR_INT), "日本語");
-        assertSizeOfMatches(Types.string(Types.VAR_INT), "x".repeat(200));
+        assertThat(encode(Types.string(Types.INT), "hi")).containsExactly(bytes(0, 0, 0, 2, 'h', 'i'));
+        assertThat(encode(Types.string(Types.INT), "")).containsExactly(bytes(0, 0, 0, 0));
+        assertRoundTrip(Types.string(Types.INT), "日本語");
+        assertSizeOfMatches(Types.string(Types.INT), "x".repeat(200));
     }
 
     @Test
     void rejectsNegativeLength() {
-        assertRejects(Types.STRING, 0xFF, 0xFF, 0xFF, 0xFF);
+        assertRejects(Types.STRING, 0xFF, 0xFF, 0xFF, 0xFF, 0x0F);
     }
 
     @Test
     void rejectsLengthPastEnd() {
-        assertRejects(Types.STRING, 0, 0, 0, 5, 'h', 'i');
-        assertRejects(Types.STRING, 0x7F, 0xFF, 0xFF, 0xFF, 'h');
+        assertRejects(Types.STRING, 5, 'h', 'i');
+        assertRejects(Types.STRING, 0xFF, 0xFF, 0xFF, 0xFF, 0x07, 'h');
     }
 
     @Test
     void rejectsMalformedUtf8() {
-        assertRejects(Types.STRING, 0, 0, 0, 1, 0xFF);
-        assertRejects(Types.STRING, 0, 0, 0, 1, 0xC3);
-        assertRejects(Types.STRING, 0, 0, 0, 2, 0xC0, 0x80);
+        assertRejects(Types.STRING, 1, 0xFF);
+        assertRejects(Types.STRING, 1, 0xC3);
+        assertRejects(Types.STRING, 2, 0xC0, 0x80);
     }
 
     @Test

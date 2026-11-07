@@ -1,37 +1,26 @@
-package red.vortx.bitfuzz.schema.std.record;
+package red.vortx.bitfuzz.schema.std.type.record;
 
 import red.vortx.bitfuzz.schema.api.SchemaDefaults;
 import red.vortx.bitfuzz.schema.api.annotation.WireType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
 import red.vortx.bitfuzz.schema.core.Boxer;
-import red.vortx.bitfuzz.schema.std.ListType;
-import red.vortx.bitfuzz.schema.std.MapType;
-import red.vortx.bitfuzz.schema.std.OptionalType;
-import red.vortx.bitfuzz.schema.std.Types;
+import red.vortx.bitfuzz.schema.std.key.SchemaStandardKeys;
+import red.vortx.bitfuzz.schema.std.type.ListType;
+import red.vortx.bitfuzz.schema.std.type.MapType;
+import red.vortx.bitfuzz.schema.std.type.OptionalType;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.AnnotatedType;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.RecordComponent;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.lang.reflect.*;
+import java.util.*;
 import java.util.function.Supplier;
 
 /// Maps records to [record types][RecordType] using reflection.
 ///
 /// Each component's type is picked in this order:
 /// 1. A [WireType] annotation on it
-/// 2. The schema's [record type][SchemaDefaults#recordType(Class)] for its Java type
+/// 2. The schema's [record type][RecordTypes] for its Java type
 /// 3. The built-in type for numbers, `boolean`, `String`, `UUID`, records, `List`, `Optional` and `Map`
 ///
 /// Building a schema with an unsupported record throws [IllegalArgumentException].
@@ -142,7 +131,7 @@ public enum RecordMapper {
             }
 
             final Class<?> raw = Boxer.box(getRawClass(annotated, location));
-            final Optional<? extends TypeSpec<?>> schemaSpec = this.defaults.recordType(raw);
+            final Optional<? extends TypeSpec<?>> schemaSpec = this.defaults.get(SchemaStandardKeys.RECORD_TYPES).get(raw);
             if (schemaSpec.isPresent()) {
                 return schemaSpec.get().resolve(this.defaults);
             }
@@ -158,7 +147,7 @@ public enum RecordMapper {
             if (annotated instanceof final AnnotatedParameterizedType parameterized) {
                 final AnnotatedType[] arguments = parameterized.getAnnotatedActualTypeArguments();
                 if (raw == List.class) {
-                    return new ListType<>(this.resolveType(arguments[0], location), this.defaults.lengthType());
+                    return new ListType<>(this.resolveType(arguments[0], location), Types.LENGTH.resolve(this.defaults));
                 }
                 if (raw == Optional.class) {
                     return new OptionalType<>(this.resolveType(arguments[0], location));
@@ -166,7 +155,7 @@ public enum RecordMapper {
                 if (raw == Map.class) {
                     final Type<?> keyType = this.resolveType(arguments[0], location);
                     final Type<?> valueType = this.resolveType(arguments[1], location);
-                    return new MapType<>(keyType, valueType, this.defaults.lengthType());
+                    return new MapType<>(keyType, valueType, Types.LENGTH.resolve(this.defaults));
                 }
             }
 

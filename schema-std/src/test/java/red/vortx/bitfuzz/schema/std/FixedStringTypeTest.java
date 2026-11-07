@@ -6,16 +6,10 @@ import red.vortx.bitfuzz.fuzz.api.FuzzResult;
 import red.vortx.bitfuzz.fuzz.core.Fuzz;
 import red.vortx.bitfuzz.schema.api.Schema;
 import red.vortx.bitfuzz.schema.api.SchemaException;
+import red.vortx.bitfuzz.schema.std.type.Types;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.assertRejects;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.assertRoundTrip;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.bytes;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.decode;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.encode;
-import static red.vortx.bitfuzz.schema.std.TestSchemas.single;
+import static org.assertj.core.api.Assertions.*;
+import static red.vortx.bitfuzz.schema.std.TestSchemas.*;
 
 class FixedStringTypeTest {
 

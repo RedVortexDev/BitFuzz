@@ -1,4 +1,4 @@
-package red.vortx.bitfuzz.schema.std.record;
+package red.vortx.bitfuzz.schema.std.type.record;
 
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;

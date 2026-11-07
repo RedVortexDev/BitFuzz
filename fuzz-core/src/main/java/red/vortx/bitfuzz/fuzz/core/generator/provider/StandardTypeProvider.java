@@ -8,10 +8,10 @@ import red.vortx.bitfuzz.fuzz.core.generator.impl.ListGenerator;
 import red.vortx.bitfuzz.fuzz.core.generator.impl.MapGenerator;
 import red.vortx.bitfuzz.fuzz.core.generator.impl.OptionalGenerator;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
-import red.vortx.bitfuzz.schema.std.FixedStringType;
-import red.vortx.bitfuzz.schema.std.ListType;
-import red.vortx.bitfuzz.schema.std.MapType;
-import red.vortx.bitfuzz.schema.std.OptionalType;
+import red.vortx.bitfuzz.schema.std.type.FixedStringType;
+import red.vortx.bitfuzz.schema.std.type.ListType;
+import red.vortx.bitfuzz.schema.std.type.MapType;
+import red.vortx.bitfuzz.schema.std.type.OptionalType;
 
 import java.util.Optional;
 

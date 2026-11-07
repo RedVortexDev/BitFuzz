@@ -1,6 +1,7 @@
 package red.vortx.bitfuzz.schema.api.field.type;
 
 import red.vortx.bitfuzz.schema.api.SchemaDefaults;
+import red.vortx.bitfuzz.schema.api.key.SchemaKeys;
 
 import java.util.Objects;
 
@@ -18,7 +19,7 @@ public record EndiannessTypeSpec<T>(Type<T> bigEndianType, Type<T> littleEndianT
 
     @Override
     public Type<T> resolve(final SchemaDefaults defaults) {
-        return defaults.endianness().isBigEndian() ? this.bigEndianType : this.littleEndianType;
+        return defaults.get(SchemaKeys.ENDIANNESS).isBigEndian() ? this.bigEndianType : this.littleEndianType;
     }
 
 }

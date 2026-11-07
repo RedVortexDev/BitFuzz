@@ -1,4 +1,4 @@
-package red.vortx.bitfuzz.schema.std;
+package red.vortx.bitfuzz.schema.std.type;
 
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
@@ -6,11 +6,7 @@ import red.vortx.bitfuzz.schema.api.SchemaException;
 import red.vortx.bitfuzz.schema.api.field.type.CompositeType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /// A map. An entry count, then each key and value in iteration order. Reading keeps that order and rejects
 /// duplicate keys.
