@@ -1,4 +1,6 @@
-# BitFuzz
+<h1 align="center">BitFuzz</h1>
+
+<p align="center">Binary schemas for Java with built-in fuzzing.</p>
 
 BitFuzz is a library for defining schemas for binary protocols, serializing and deserializing data, as well as fuzzing
 data based off of a schema with various type-specific generators and various mutators.
