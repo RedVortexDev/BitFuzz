@@ -39,7 +39,7 @@ class MutationRunnerTest {
         final Schema schema = SchemaBuilder.create()
                 .field(Types.VAR_INT, "id")
                 .field(Types.STRING, "name")
-                .field(Types.list(Types.optional(Types.UUID)), "friends")
+                .field(Types.listOf(Types.optionalOf(Types.UUID)), "friends")
                 .build();
 
         final FuzzResult result = run(schema, 10_000, 42);

@@ -160,6 +160,12 @@ public enum RecordMapper {
                 return this.map(raw.asSubclass(Record.class));
             }
 
+            if (raw.isEnum()) {
+                //noinspection unchecked,rawtypes -- isEnum() checked above
+                final TypeSpec<?> enumSpec = Types.enumOf((Class) raw);
+                return enumSpec.resolve(this.defaults);
+            }
+
             if (annotated instanceof final AnnotatedParameterizedType parameterized) {
                 final AnnotatedType[] arguments = parameterized.getAnnotatedActualTypeArguments();
                 if (raw == List.class) {

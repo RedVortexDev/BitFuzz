@@ -35,11 +35,11 @@ class GeneratorsTest {
         return Stream.of(
                 Types.BYTE, Types.SHORT, Types.SHORT_LE, Types.INT, Types.INT_LE, Types.LONG, Types.LONG_LE,
                 Types.FLOAT, Types.FLOAT_LE, Types.DOUBLE, Types.DOUBLE_LE,
-                Types.BOOL, Types.UUID, Types.STRING, Types.string(Types.VAR_INT), Types.VAR_INT, Types.VAR_LONG,
-                Types.list(Types.INT), Types.list(Types.STRING, Types.VAR_INT),
-                Types.map(Types.STRING, Types.LONG), Types.map(Types.BOOL, Types.UUID),
-                Types.optional(Types.VAR_INT),
-                Types.list(Types.optional(Types.map(Types.VAR_LONG, Types.list(Types.STRING))))
+                Types.BOOL, Types.UUID, Types.STRING, Types.stringOf(Types.VAR_INT), Types.VAR_INT, Types.VAR_LONG,
+                Types.listOf(Types.INT), Types.listOf(Types.STRING, Types.VAR_INT),
+                Types.mapOf(Types.STRING, Types.LONG), Types.mapOf(Types.BOOL, Types.UUID),
+                Types.optionalOf(Types.VAR_INT),
+                Types.listOf(Types.optionalOf(Types.mapOf(Types.VAR_LONG, Types.listOf(Types.STRING))))
         );
     }
 
@@ -67,7 +67,7 @@ class GeneratorsTest {
 
     @Test
     void sameSeedGivesSameValues() {
-        final Generator<?> generator = REGISTRY.ofType(resolve(Types.map(Types.STRING, Types.list(Types.LONG))));
+        final Generator<?> generator = REGISTRY.ofType(resolve(Types.mapOf(Types.STRING, Types.listOf(Types.LONG))));
 
         assertThat(sample(generator, random(7), 100)).isEqualTo(sample(generator, random(7), 100));
         assertThat(sample(generator, random(7), 100)).isNotEqualTo(sample(generator, random(8), 100));
@@ -88,7 +88,7 @@ class GeneratorsTest {
         final Type<StringBuilder> custom = new SimpleType<>(StringBuilder.class, (out, value) -> {
         }, in -> new StringBuilder());
 
-        assertThatThrownBy(() -> REGISTRY.ofType(resolve(Types.list(custom))))
+        assertThatThrownBy(() -> REGISTRY.ofType(resolve(Types.listOf(custom))))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -109,7 +109,7 @@ class GeneratorsTest {
         final Generators registry = REGISTRY.with(provider);
 
         assertThat(registry.ofType(custom).generate(random()).toString()).isEqualTo("custom");
-        assertThat(sample(registry.ofType(resolve(Types.list(custom))), random(), 50))
+        assertThat(sample(registry.ofType(resolve(Types.listOf(custom))), random(), 50))
                 .allSatisfy(list -> assertThat(list).allSatisfy(element ->
                         assertThat(element.toString()).isEqualTo("custom")));
     }

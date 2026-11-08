@@ -29,7 +29,7 @@ class RoundTripRunnerTest {
         final Schema schema = SchemaBuilder.create()
                 .field(Types.VAR_INT, "id")
                 .field(Types.STRING, "name")
-                .field(Types.map(Types.STRING, Types.list(Types.optional(Types.DOUBLE))), "data")
+                .field(Types.mapOf(Types.STRING, Types.listOf(Types.optionalOf(Types.DOUBLE))), "data")
                 .build();
 
         final FuzzResult result = run(schema, 5_000, 42);

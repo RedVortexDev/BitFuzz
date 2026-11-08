@@ -56,15 +56,15 @@ class StringTypeTest {
 
     @Test
     void intLengthFollowsSchemaEndianness() {
-        assertThat(encode(Types.string(Types.INT), Endianness.LITTLE_ENDIAN, "hi")).containsExactly(bytes(2, 0, 0, 0, 'h', 'i'));
+        assertThat(encode(Types.stringOf(Types.INT), Endianness.LITTLE_ENDIAN, "hi")).containsExactly(bytes(2, 0, 0, 0, 'h', 'i'));
     }
 
     @Test
     void customLengthType() {
-        assertThat(encode(Types.string(Types.INT), "hi")).containsExactly(bytes(0, 0, 0, 2, 'h', 'i'));
-        assertThat(encode(Types.string(Types.INT), "")).containsExactly(bytes(0, 0, 0, 0));
-        assertRoundTrip(Types.string(Types.INT), "日本語");
-        assertSizeOfMatches(Types.string(Types.INT), "x".repeat(200));
+        assertThat(encode(Types.stringOf(Types.INT), "hi")).containsExactly(bytes(0, 0, 0, 2, 'h', 'i'));
+        assertThat(encode(Types.stringOf(Types.INT), "")).containsExactly(bytes(0, 0, 0, 0));
+        assertRoundTrip(Types.stringOf(Types.INT), "日本語");
+        assertSizeOfMatches(Types.stringOf(Types.INT), "x".repeat(200));
     }
 
     @Test

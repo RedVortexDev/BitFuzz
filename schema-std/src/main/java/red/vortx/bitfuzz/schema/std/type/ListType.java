@@ -21,7 +21,8 @@ import java.util.Objects;
 /// @param elementType the type of the elements
 /// @param lengthType  the type of the count prefix
 /// @param <T>         the type of the elements
-public record ListType<T>(Type<T> elementType, Type<Integer> lengthType) implements CompositeType<List<T>> {
+public record ListType<T>(Type<T> elementType,
+                          Type<Integer> lengthType) implements CompositeType<List<T>>, StandardType<List<T>> {
 
     public ListType {
         Objects.requireNonNull(elementType, "elementType");

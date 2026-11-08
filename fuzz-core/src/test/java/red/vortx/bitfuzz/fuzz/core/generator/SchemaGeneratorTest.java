@@ -25,8 +25,8 @@ class SchemaGeneratorTest {
     private static final Schema PLAYER = SchemaBuilder.create()
             .field(Types.VAR_INT, "id")
             .field(Types.STRING, "name")
-            .field(Types.list(Types.optional(Types.UUID)), "friends")
-            .field(Types.map(Types.STRING, Types.LONG), "stats")
+            .field(Types.listOf(Types.optionalOf(Types.UUID)), "friends")
+            .field(Types.mapOf(Types.STRING, Types.LONG), "stats")
             .field(Types.BOOL, "online")
             .build();
 

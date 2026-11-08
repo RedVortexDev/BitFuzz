@@ -21,7 +21,7 @@ class SchemaProviderTest {
     void schemaBuiltThroughApiRoundTrips() {
         final Schema schema = SchemaBuilder.create()
                 .field(Types.INT, "id")
-                .field(Types.list(Types.SHORT), "values")
+                .field(Types.listOf(Types.SHORT), "values")
                 .build();
         final List<Object> values = List.of(7, List.of((short) 1, (short) 2));
 

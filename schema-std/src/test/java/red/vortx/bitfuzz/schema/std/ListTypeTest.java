@@ -29,7 +29,7 @@ class ListTypeTest {
     private static Schema listOfInts(final Endianness endianness) {
         return new SchemaBuilderImpl()
                 .defaults(defaults -> defaults.set(SchemaKeys.ENDIANNESS, endianness).set(SchemaStandardKeys.LENGTH_TYPE, Types.INT))
-                .field(Types.list(Types.INT), "list")
+                .field(Types.listOf(Types.INT), "list")
                 .build();
     }
 
@@ -103,7 +103,7 @@ class ListTypeTest {
     void lengthIsAVarIntByDefault() {
         final Schema schema = new SchemaBuilderImpl()
                 .defaults(defaults -> defaults.set(SchemaKeys.ENDIANNESS, Endianness.LITTLE_ENDIAN))
-                .field(Types.list(Types.INT), "list")
+                .field(Types.listOf(Types.INT), "list")
                 .build();
 
         final byte[] bytes = written(out -> schema.write(out, List.of(List.of(1))));
@@ -147,7 +147,7 @@ class ListTypeTest {
     void listSpecResolvesElementType() {
         final Schema schema = new SchemaBuilderImpl()
                 .defaults(defaults -> defaults.set(SchemaKeys.ENDIANNESS, Endianness.LITTLE_ENDIAN))
-                .field(Types.list(Types.SHORT), "list")
+                .field(Types.listOf(Types.SHORT), "list")
                 .build();
 
         final Type<?> type = schema.fields().getFirst().type();

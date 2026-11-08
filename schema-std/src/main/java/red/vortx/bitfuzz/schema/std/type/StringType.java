@@ -18,7 +18,7 @@ import java.util.Objects;
 /// Writing a string with an unpaired surrogate, or reading malformed UTF-8, throws [SchemaException].
 ///
 /// @param lengthType the type of the length prefix
-public record StringType(Type<Integer> lengthType) implements CompositeType<String> {
+public record StringType(Type<Integer> lengthType) implements CompositeType<String>, StandardType<String> {
 
     public StringType {
         Objects.requireNonNull(lengthType, "lengthType");

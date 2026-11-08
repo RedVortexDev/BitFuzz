@@ -38,8 +38,8 @@ class WireDumpTest {
             .build();
 
     private static final Schema EVERYTHING = SchemaBuilder.create()
-            .field(Types.record(Profile.class), "profile")
-            .field(Types.map(Types.STRING, Types.list(Types.optional(Types.VAR_LONG))), "nested")
+            .field(Types.recordOf(Profile.class), "profile")
+            .field(Types.mapOf(Types.STRING, Types.listOf(Types.optionalOf(Types.VAR_LONG))), "nested")
             .field(Types.UUID, "id")
             .build();
 
@@ -58,7 +58,7 @@ class WireDumpTest {
     @Test
     void splitsLongEncodingsIntoRows() {
         final Schema schema = SchemaBuilder.create()
-                .field(Types.record(Profile.class), "profile")
+                .field(Types.recordOf(Profile.class), "profile")
                 .build();
         final Profile profile = new Profile("alexander", List.of(1, 300, 7), Optional.of(new Point(1, 2)), Map.of());
 
@@ -87,7 +87,7 @@ class WireDumpTest {
     @Test
     void explainsNestedValuesDownToTheirLeaves() {
         final Schema schema = SchemaBuilder.create()
-                .field(Types.record(Profile.class), "profile")
+                .field(Types.recordOf(Profile.class), "profile")
                 .build();
         final Profile profile = new Profile("al", List.of(1, 300), Optional.of(new Point(1, 2)), Map.of("admin", true));
 

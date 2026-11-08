@@ -58,7 +58,7 @@ class SimpleUsageTest {
     }
 
     static final Schema PLAYER_RECORD = SchemaBuilder.create()
-            .field(Types.record(Player.class), "player")
+            .field(Types.recordOf(Player.class), "player")
             .build();
 
     @Test

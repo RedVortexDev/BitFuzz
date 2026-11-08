@@ -7,10 +7,9 @@ package red.vortx.bitfuzz.schema.std.type;
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
 import red.vortx.bitfuzz.schema.api.SchemaException;
-import red.vortx.bitfuzz.schema.api.field.type.Type;
 
 /// A boolean. One byte, `0` for false and `1` for true. Any other value is rejected.
-public record BooleanType() implements Type<Boolean> {
+public record BooleanType() implements StandardType<Boolean> {
 
     public static final byte TRUE = (byte) 1;
     public static final byte FALSE = (byte) 0;

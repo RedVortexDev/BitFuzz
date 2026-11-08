@@ -7,14 +7,13 @@ package red.vortx.bitfuzz.schema.std.type;
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
 import red.vortx.bitfuzz.schema.api.SchemaException;
-import red.vortx.bitfuzz.schema.api.field.type.Type;
 
 /// A variable-length 32-bit integer. 7 bits per byte, least significant group first, with the high bit set on every
 /// byte except the last. Negative values always take 5 bytes.
 ///
 /// Reading rejects encodings longer than 5 bytes and a 5th byte that carries bits beyond 32. Overlong but otherwise
 /// valid encodings (e.g. `80 00` for 0) are accepted.
-public record VarIntType() implements Type<Integer> {
+public record VarIntType() implements StandardType<Integer> {
 
     static final int MAX_BYTES = 5;
 

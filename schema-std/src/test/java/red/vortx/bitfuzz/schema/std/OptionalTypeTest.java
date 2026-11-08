@@ -16,7 +16,7 @@ import static red.vortx.bitfuzz.schema.std.TestSchemas.*;
 
 class OptionalTypeTest {
 
-    private static final TypeSpec<Optional<Integer>> OPTIONAL_INT = Types.optional(Types.INT);
+    private static final TypeSpec<Optional<Integer>> OPTIONAL_INT = Types.optionalOf(Types.INT);
 
     @Test
     void emptyIsSingleZeroByte() {
@@ -39,14 +39,14 @@ class OptionalTypeTest {
     void roundTripAndSize() {
         assertRoundTrip(OPTIONAL_INT, Optional.empty());
         assertRoundTrip(OPTIONAL_INT, Optional.of(-1));
-        assertRoundTrip(Types.optional(Types.STRING), Optional.of("hi"));
+        assertRoundTrip(Types.optionalOf(Types.STRING), Optional.of("hi"));
         assertSizeOfMatches(OPTIONAL_INT, Optional.empty());
         assertSizeOfMatches(OPTIONAL_INT, Optional.of(1));
     }
 
     @Test
     void nestedOptionals() {
-        final TypeSpec<Optional<Optional<Byte>>> nested = Types.optional(Types.optional(Types.BYTE));
+        final TypeSpec<Optional<Optional<Byte>>> nested = Types.optionalOf(Types.optionalOf(Types.BYTE));
 
         assertThat(encode(nested, Optional.of(Optional.empty()))).containsExactly(bytes(1, 0));
         assertRoundTrip(nested, Optional.empty());

@@ -41,8 +41,8 @@ class UsageExampleTest {
             .field(Types.VAR_INT, "messageId")
             .field(Types.UUID, "sender")
             .field(Types.STRING, "text")
-            .field(Types.list(Types.STRING), "mentions")
-            .field(Types.optional(Types.VAR_INT), "replyTo")
+            .field(Types.listOf(Types.STRING), "mentions")
+            .field(Types.optionalOf(Types.VAR_INT), "replyTo")
             .build();
 
     static final UUID SENDER = UUID.fromString("6f1c2a3b-4d5e-4f60-8a9b-0c1d2e3f4a5b");

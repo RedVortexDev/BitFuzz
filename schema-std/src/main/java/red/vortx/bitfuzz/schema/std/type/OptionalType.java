@@ -19,7 +19,7 @@ import java.util.Optional;
 ///
 /// @param valueType the type of the value
 /// @param <T>       the type of the value
-public record OptionalType<T>(Type<T> valueType) implements CompositeType<Optional<T>> {
+public record OptionalType<T>(Type<T> valueType) implements CompositeType<Optional<T>>, StandardType<Optional<T>> {
 
     private static final byte EMPTY = 0;
     private static final byte PRESENT = 1;

@@ -17,6 +17,7 @@ import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
 import red.vortx.bitfuzz.schema.api.key.SchemaKeys;
 import red.vortx.bitfuzz.schema.std.key.SchemaStandardKeys;
 import red.vortx.bitfuzz.schema.std.type.Types;
+import red.vortx.bitfuzz.schema.std.type.enumeration.EnumEncoding;
 import red.vortx.bitfuzz.schema.std.type.record.RecordTypes;
 import red.vortx.bitfuzz.schema.std.type.record.VarInt;
 import red.vortx.bitfuzz.schema.std.type.record.VarLong;
@@ -80,6 +81,10 @@ class RecordTypeTest {
 
     }
 
+    record Painted(Endianness order, List<Endianness> history) {
+
+    }
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE_USE)
     @WireType(Fixed.Spec.class)
@@ -97,14 +102,29 @@ class RecordTypeTest {
     }
 
     private static Schema schemaOf(final Class<? extends Record> recordClass) {
-        return SchemaBuilder.create().field(Types.record(recordClass), "value").build();
+        return SchemaBuilder.create().field(Types.recordOf(recordClass), "value").build();
     }
 
     private static Schema varIntSchemaOf(final Class<? extends Record> recordClass) {
         return SchemaBuilder.create()
                 .defaults(defaults -> defaults.update(SchemaStandardKeys.RECORD_TYPES, types -> types.with(Integer.class, Types.VAR_INT)))
-                .field(Types.record(recordClass), "value")
+                .field(Types.recordOf(recordClass), "value")
                 .build();
+    }
+
+    @Test
+    void enumComponentsFollowSchemaEncoding() {
+        final Painted painted = new Painted(Endianness.LITTLE_ENDIAN, List.of(Endianness.BIG_ENDIAN));
+        final Schema named = SchemaBuilder.create()
+                .defaults(defaults -> defaults.set(SchemaStandardKeys.ENUM_ENCODING, EnumEncoding.NAME))
+                .field(Types.recordOf(Painted.class), "value")
+                .build();
+
+        assertThat(written(out -> schemaOf(Painted.class).write(out, List.of(painted))))
+                .as("ordinals as varints by default")
+                .containsExactly(Endianness.LITTLE_ENDIAN.ordinal(), 1, Endianness.BIG_ENDIAN.ordinal());
+        assertThat(roundTrip(schemaOf(Painted.class), painted)).isEqualTo(painted);
+        assertThat(roundTrip(named, painted)).isEqualTo(painted);
     }
 
     private static Object roundTrip(final Schema schema, final Object value) {
@@ -139,7 +159,7 @@ class RecordTypeTest {
     void followsSchemaEndianness() {
         final Schema schema = SchemaBuilder.create()
                 .defaults(defaults -> defaults.set(SchemaKeys.ENDIANNESS, Endianness.LITTLE_ENDIAN))
-                .field(Types.record(Point.class), "point")
+                .field(Types.recordOf(Point.class), "point")
                 .build();
 
         assertThat(written(out -> schema.write(out, List.of(new Point(1, 2))))).containsExactly(1, 0, 0, 0, 2, 0, 0, 0);
@@ -161,7 +181,7 @@ class RecordTypeTest {
                         .update(SchemaStandardKeys.RECORD_TYPES, types -> types.with(Integer.class, Types.VAR_INT))
                         .set(SchemaStandardKeys.LENGTH_TYPE, Types.INT)
                 )
-                .field(Types.record(Leaderboard.class), "value")
+                .field(Types.recordOf(Leaderboard.class), "value")
                 .build();
         final Leaderboard leaderboard = new Leaderboard(new Point(1, 2), List.of(300));
 
@@ -175,7 +195,7 @@ class RecordTypeTest {
     void recordTypesTreatPrimitivesAndWrappersAsTheSameType() {
         final Schema schema = SchemaBuilder.create()
                 .defaults(defaults -> defaults.update(SchemaStandardKeys.RECORD_TYPES, types -> types.with(int.class, Types.VAR_INT)))
-                .field(Types.record(Point.class), "point")
+                .field(Types.recordOf(Point.class), "point")
                 .build();
 
         assertThat(written(out -> schema.write(out, List.of(new Point(1, 2))))).containsExactly(1, 2);
@@ -186,7 +206,7 @@ class RecordTypeTest {
         final Schema schema = SchemaBuilder.create()
                 .defaults(defaults -> defaults.update(SchemaStandardKeys.RECORD_TYPES, types -> types.with(Integer.class, Types.VAR_INT)))
                 .defaults(defaults -> defaults.update(SchemaStandardKeys.RECORD_TYPES, types -> types.with(Long.class, Types.VAR_LONG)))
-                .field(Types.record(Point.class), "point")
+                .field(Types.recordOf(Point.class), "point")
                 .build();
 
         assertThat(written(out -> schema.write(out, List.of(new Point(1, 2))))).as("the Long type kept the Integer one").containsExactly(1, 2);

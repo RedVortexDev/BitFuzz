@@ -27,7 +27,7 @@ import java.util.Objects;
 /// @param <K>        the type of the keys
 /// @param <V>        the type of the values
 public record MapType<K, V>(Type<K> keyType, Type<V> valueType,
-                            Type<Integer> lengthType) implements CompositeType<Map<K, V>> {
+                            Type<Integer> lengthType) implements CompositeType<Map<K, V>>, StandardType<Map<K, V>> {
 
     public MapType {
         Objects.requireNonNull(keyType, "keyType");

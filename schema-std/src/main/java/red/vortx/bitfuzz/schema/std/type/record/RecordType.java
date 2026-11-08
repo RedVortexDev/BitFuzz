@@ -9,6 +9,7 @@ import red.vortx.bitfuzz.buffer.ByteWriter;
 import red.vortx.bitfuzz.schema.api.SchemaException;
 import red.vortx.bitfuzz.schema.api.field.type.CompositeType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
+import red.vortx.bitfuzz.schema.std.type.StandardType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,7 +27,7 @@ import java.util.Objects;
 /// @param constructor the canonical constructor
 /// @param <R>         the record type
 public record RecordType<R extends Record>(Class<R> javaType, List<Component> components,
-                                           Constructor<R> constructor) implements CompositeType<R> {
+                                           Constructor<R> constructor) implements CompositeType<R>, StandardType<R> {
 
     public RecordType {
         Objects.requireNonNull(javaType, "javaType");

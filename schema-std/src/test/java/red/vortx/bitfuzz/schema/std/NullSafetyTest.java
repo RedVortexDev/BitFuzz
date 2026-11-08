@@ -30,11 +30,11 @@ class NullSafetyTest {
 
     @Test
     void factoriesRejectNullsImmediately() {
-        assertThatNullPointerException().isThrownBy(() -> Types.list(null)).withMessage("elementType");
-        assertThatNullPointerException().isThrownBy(() -> Types.list(Types.INT, null)).withMessage("lengthType");
-        assertThatNullPointerException().isThrownBy(() -> Types.map(Types.INT, null)).withMessage("valueType");
-        assertThatNullPointerException().isThrownBy(() -> Types.optional(null)).withMessage("valueType");
-        assertThatNullPointerException().isThrownBy(() -> Types.string(null)).withMessage("lengthType");
+        assertThatNullPointerException().isThrownBy(() -> Types.listOf(null)).withMessage("elementType");
+        assertThatNullPointerException().isThrownBy(() -> Types.listOf(Types.INT, null)).withMessage("lengthType");
+        assertThatNullPointerException().isThrownBy(() -> Types.mapOf(Types.INT, null)).withMessage("valueType");
+        assertThatNullPointerException().isThrownBy(() -> Types.optionalOf(null)).withMessage("valueType");
+        assertThatNullPointerException().isThrownBy(() -> Types.stringOf(null)).withMessage("lengthType");
     }
 
 }

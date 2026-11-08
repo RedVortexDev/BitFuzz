@@ -87,7 +87,7 @@ record Player(String name, @VarInt int level, boolean online, List<String> tags)
 }
 
 Schema schema = SchemaBuilder.create()
-        .field(Types.record(Player.class), "player")
+        .field(Types.recordOf(Player.class), "player")
         .build();
 
 schema.write(writer, List.of(new Player("steve", 300, true, List.of("op"))));
@@ -164,7 +164,7 @@ Schema schema = SchemaBuilder.create()
                         types.with(Integer.class, Types.VAR_INT)
                 )
         )
-        .field(Types.record(Player.class), "player")
+        .field(Types.recordOf(Player.class), "player")
         .field(Types.INT, "score")
         .build();
 

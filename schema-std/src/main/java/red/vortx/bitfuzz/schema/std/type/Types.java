@@ -11,6 +11,8 @@ import red.vortx.bitfuzz.schema.api.field.type.SimpleType;
 import red.vortx.bitfuzz.schema.api.field.type.Type;
 import red.vortx.bitfuzz.schema.api.field.type.TypeSpec;
 import red.vortx.bitfuzz.schema.std.key.SchemaStandardKeys;
+import red.vortx.bitfuzz.schema.std.type.enumeration.NamedEnumType;
+import red.vortx.bitfuzz.schema.std.type.enumeration.OrdinalEnumType;
 import red.vortx.bitfuzz.schema.std.type.record.RecordMapper;
 
 import java.util.List;
@@ -98,7 +100,7 @@ public enum Types {
     public static final TypeSpec<Integer> LENGTH = defaults ->
             defaults.get(SchemaStandardKeys.LENGTH_TYPE).resolve(defaults);
 
-    /// A UTF-8 string. Prefixed with its length in bytes.
+    /// A UTF-8 string. Prefixed with its length in bytes. Length prefix type is the schema's [length type][#LENGTH].
     ///
     /// Strict encoding and decoding, unpaired surrogates when writing and malformed UTF-8 when reading throw
     /// [SchemaException].
@@ -110,21 +112,80 @@ public enum Types {
     /// [SchemaException].
     ///
     /// @param lengthType the type of the length prefix
-    public static TypeSpec<String> string(final TypeSpec<Integer> lengthType) {
+    public static TypeSpec<String> stringOf(final TypeSpec<Integer> lengthType) {
         Objects.requireNonNull(lengthType, "lengthType");
 
         return defaults -> new StringType(lengthType.resolve(defaults));
     }
 
+    // Tagged
+
+    /// The schema's [tag type][SchemaStandardKeys#TAG_TYPE], a [varint][#VAR_INT] by default.
+    public static final TypeSpec<Integer> TAG = defaults ->
+            defaults.get(SchemaStandardKeys.TAG_TYPE).resolve(defaults);
+
+    /// An enum constant. Encoded with schema's [enum encoding][SchemaStandardKeys#ENUM_ENCODING].
+    ///
+    /// @param enumClass the enum class
+    /// @param <E>       the enum type
+    public static <E extends Enum<E>> TypeSpec<E> enumOf(final Class<E> enumClass) {
+        Objects.requireNonNull(enumClass, "enumClass");
+
+        return defaults -> switch (defaults.get(SchemaStandardKeys.ENUM_ENCODING)) {
+            case ORDINAL -> enumOrdinalOf(enumClass).resolve(defaults);
+            case NAME -> enumNameOf(enumClass).resolve(defaults);
+        };
+    }
+
+    /// An enum constant written as its ordinal, as the schema's [tag type][#TAG].
+    ///
+    /// @param enumClass the enum class
+    /// @param <E>       the enum type
+    public static <E extends Enum<E>> TypeSpec<E> enumOrdinalOf(final Class<E> enumClass) {
+        return enumOrdinalOf(enumClass, TAG);
+    }
+
+    /// An enum constant written as its ordinal.
+    ///
+    /// @param enumClass the enum class
+    /// @param tagType   the type of the ordinal
+    /// @param <E>       the enum type
+    public static <E extends Enum<E>> TypeSpec<E> enumOrdinalOf(final Class<E> enumClass, final TypeSpec<Integer> tagType) {
+        Objects.requireNonNull(enumClass, "enumClass");
+        Objects.requireNonNull(tagType, "tagType");
+
+        return defaults -> new OrdinalEnumType<>(enumClass, tagType.resolve(defaults));
+    }
+
+    /// An enum constant written as its name, as a [string][#STRING].
+    ///
+    /// @param enumClass the enum class
+    /// @param <E>       the enum type
+    public static <E extends Enum<E>> TypeSpec<E> enumNameOf(final Class<E> enumClass) {
+        return enumNameOf(enumClass, STRING);
+    }
+
+    /// An enum constant written as its name.
+    ///
+    /// @param enumClass the enum class
+    /// @param nameType  the type of the name
+    /// @param <E>       the enum type
+    public static <E extends Enum<E>> TypeSpec<E> enumNameOf(final Class<E> enumClass, final TypeSpec<String> nameType) {
+        Objects.requireNonNull(enumClass, "enumClass");
+        Objects.requireNonNull(nameType, "nameType");
+
+        return defaults -> new NamedEnumType<>(enumClass, nameType.resolve(defaults));
+    }
+
     // Collections
 
     /// A list. An element count followed by each element in iteration order. Reading returns a list that keeps the
-    /// order of the bytes.
+    /// order of the bytes. Length prefix type is the schema's [length type][#LENGTH].
     ///
     /// @param elementType the type of the elements
     /// @param <T>         the type of the elements
-    public static <T> TypeSpec<List<T>> list(final TypeSpec<T> elementType) {
-        return list(elementType, LENGTH);
+    public static <T> TypeSpec<List<T>> listOf(final TypeSpec<T> elementType) {
+        return listOf(elementType, LENGTH);
     }
 
     /// A list. An element count followed by each element in iteration order. Reading returns a list that keeps the
@@ -133,7 +194,7 @@ public enum Types {
     /// @param elementType the type of the elements
     /// @param lengthType  the type of the count prefix
     /// @param <T>         the type of the elements
-    public static <T> TypeSpec<List<T>> list(final TypeSpec<T> elementType, final TypeSpec<Integer> lengthType) {
+    public static <T> TypeSpec<List<T>> listOf(final TypeSpec<T> elementType, final TypeSpec<Integer> lengthType) {
         Objects.requireNonNull(elementType, "elementType");
         Objects.requireNonNull(lengthType, "lengthType");
 
@@ -144,14 +205,14 @@ public enum Types {
     }
 
     /// A map. An entry count followed by each key and value in iteration order. Reading returns a map that keeps the
-    /// order of the bytes and rejects duplicate keys.
+    /// order of the bytes and rejects duplicate keys. Length prefix type is the schema's [length type][#LENGTH].
     ///
     /// @param keyType   the type of the keys
     /// @param valueType the type of the values
     /// @param <K>       the type of the keys
     /// @param <V>       the type of the values
-    public static <K, V> TypeSpec<Map<K, V>> map(final TypeSpec<K> keyType, final TypeSpec<V> valueType) {
-        return map(keyType, valueType, LENGTH);
+    public static <K, V> TypeSpec<Map<K, V>> mapOf(final TypeSpec<K> keyType, final TypeSpec<V> valueType) {
+        return mapOf(keyType, valueType, LENGTH);
     }
 
     /// A map. An entry count followed by each key and value in iteration order. Reading returns a map that keeps the
@@ -162,7 +223,7 @@ public enum Types {
     /// @param lengthType the type of the count prefix
     /// @param <K>        the type of the keys
     /// @param <V>        the type of the values
-    public static <K, V> TypeSpec<Map<K, V>> map(final TypeSpec<K> keyType, final TypeSpec<V> valueType, final TypeSpec<Integer> lengthType) {
+    public static <K, V> TypeSpec<Map<K, V>> mapOf(final TypeSpec<K> keyType, final TypeSpec<V> valueType, final TypeSpec<Integer> lengthType) {
         Objects.requireNonNull(keyType, "keyType");
         Objects.requireNonNull(valueType, "valueType");
         Objects.requireNonNull(lengthType, "lengthType");
@@ -181,7 +242,7 @@ public enum Types {
     ///
     /// @param valueType the type of the value
     /// @param <T>       the type of the value
-    public static <T> TypeSpec<Optional<T>> optional(final TypeSpec<T> valueType) {
+    public static <T> TypeSpec<Optional<T>> optionalOf(final TypeSpec<T> valueType) {
         Objects.requireNonNull(valueType, "valueType");
 
         return defaults -> new OptionalType<>(valueType.resolve(defaults));
@@ -194,7 +255,7 @@ public enum Types {
     /// @param recordClass the record class
     /// @param <R>         the record type
     /// @return a spec for the record
-    public static <R extends Record> TypeSpec<R> record(final Class<R> recordClass) {
+    public static <R extends Record> TypeSpec<R> recordOf(final Class<R> recordClass) {
         return RecordMapper.spec(recordClass);
     }
 

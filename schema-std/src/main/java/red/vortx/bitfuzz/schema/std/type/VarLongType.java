@@ -7,14 +7,13 @@ package red.vortx.bitfuzz.schema.std.type;
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
 import red.vortx.bitfuzz.schema.api.SchemaException;
-import red.vortx.bitfuzz.schema.api.field.type.Type;
 
 /// A variable-length 64-bit integer. Encoded like [VarIntType], but up to 10 bytes. Negative values always take
 /// 10 bytes.
 ///
 /// Reading rejects encodings longer than 10 bytes and a 10th byte that carries bits beyond 64. Overlong but otherwise
 /// valid encodings are accepted.
-public record VarLongType() implements Type<Long> {
+public record VarLongType() implements StandardType<Long> {
 
     static final int MAX_BYTES = 10;
 

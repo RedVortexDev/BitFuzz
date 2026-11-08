@@ -23,7 +23,7 @@ import static red.vortx.bitfuzz.schema.std.TestSchemas.*;
 
 class MapTypeTest {
 
-    private static final TypeSpec<Map<Byte, Short>> BYTE_TO_SHORT = Types.map(Types.BYTE, Types.SHORT);
+    private static final TypeSpec<Map<Byte, Short>> BYTE_TO_SHORT = Types.mapOf(Types.BYTE, Types.SHORT);
 
     private static <K, V> Map<K, V> ordered(final Object... keysAndValues) {
         final Map<K, V> map = new LinkedHashMap<>();
@@ -64,7 +64,7 @@ class MapTypeTest {
     @Test
     void roundTripAndSize() {
         final Map<String, List<Integer>> map = ordered("a", List.of(1, 2), "", List.of(), "日本", List.of(-1));
-        final TypeSpec<Map<String, List<Integer>>> type = Types.map(Types.STRING, Types.list(Types.INT));
+        final TypeSpec<Map<String, List<Integer>>> type = Types.mapOf(Types.STRING, Types.listOf(Types.INT));
 
         assertRoundTrip(type, map);
         assertSizeOfMatches(type, map);
@@ -72,7 +72,7 @@ class MapTypeTest {
 
     @Test
     void customLengthType() {
-        final TypeSpec<Map<Byte, Byte>> type = Types.map(Types.BYTE, Types.BYTE, Types.INT);
+        final TypeSpec<Map<Byte, Byte>> type = Types.mapOf(Types.BYTE, Types.BYTE, Types.INT);
 
         assertThat(encode(type, ordered((byte) 1, (byte) 2))).containsExactly(bytes(0, 0, 0, 1, 1, 2));
         assertRoundTrip(type, ordered((byte) 1, (byte) 2, (byte) 3, (byte) 4));

@@ -7,14 +7,13 @@ package red.vortx.bitfuzz.schema.std.type;
 import red.vortx.bitfuzz.buffer.ByteReader;
 import red.vortx.bitfuzz.buffer.ByteWriter;
 import red.vortx.bitfuzz.schema.api.SchemaException;
-import red.vortx.bitfuzz.schema.api.field.type.Type;
 
 /// A fixed-length UTF-8 string, with no length prefix.
 ///
 /// Not padded, writing a string of any other byte length throws [SchemaException].
 ///
 /// @param byteLength the number of bytes
-public record FixedStringType(int byteLength) implements Type<String> {
+public record FixedStringType(int byteLength) implements StandardType<String> {
 
     public FixedStringType {
         if (byteLength < 0) {
